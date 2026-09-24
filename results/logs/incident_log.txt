@@ -1,0 +1,117 @@
+03_incident_analysis.py — run 2026-09-24 12:02:43
+
+==========================================================================
+STEP 1 — LOAD AND REPAIR
+==========================================================================
+Raw rows: 17,312
+Unparseable dates: 0
+Unparseable times: 153 (recovered 31 by accepting the no-space '3:20PM' form)
+Encoding repair: 'ParaÃ±aque' (107 rows) -> 'Parañaque'
+Encoding repair: 'Kalookan City' (70 rows) -> 'Caloocan City'
+Coordinates (0,0) 'null island': 55 rows -> flagged geo_valid=False, RETAINED for counting
+Outside Metro Manila bounding box: 0 rows
+Rows self-flagged High_Accuracy=0: 768
+Duplicate tweet URLs: 16
+Duplicate Date+Time+Location+Type: 273
+Union dropped as re-posts: 289
+Direction: 862 missing or invalid (junk values seen: ['CLARA', 'CLOSED', 'DAR', 'PAX'])
+Lanes_Blocked missing: 687
+
+Rows after repair: 17,023  (dropped 289)
+
+==========================================================================
+STEP 2 — CLASSIFY INCIDENT TYPE
+==========================================================================
+Distinct raw Type strings: 493
+Type values occurring exactly once: 343 of 493  <- free text, not a coded field
+
+  CRASH         12,570  ( 73.8%)
+  STALL          3,918  ( 23.0%)
+  ROADWORK         239  (  1.4%)
+  OBSTRUCTION      163  (  1.0%)
+  OTHER            133  (  0.8%)
+
+Modelled outcome = CRASH only: 12,570 rows.
+Treating every row as a crash would inflate counts by 35%.
+
+==========================================================================
+STEP 3 — TAG CORRIDOR
+==========================================================================
+Distinct location strings: 2,977
+  EDSA     8,287
+  C5       2,632
+  OTHER    6,104
+
+EDSA/C5 overlap: 0 rows.
+Zero overlap confirmed — the corridors are disjoint, so per-corridor
+rates are well defined and the two roads can be compared directly.
+
+==========================================================================
+STEP 4 — COVERAGE AUDIT
+==========================================================================
+Series spans 2018-08-20 to 2020-12-27 (29 months)
+
+  month     rows   status
+  ----------------------------------------------
+  2018-08     309   partial month — series begins mid-month
+  2018-09     863   usable
+  2018-10   1,065   usable
+  2018-11     920   usable
+  2018-12     768   usable
+  2019-01     908   usable
+  2019-02     847   usable
+  2019-03   1,023   usable
+  2019-04     811   usable
+  2019-05     803   usable
+  2019-06     779   usable
+  2019-07     892   usable
+  2019-08     882   usable
+  2019-09     825   usable
+  2019-10     825   usable
+  2019-11     739   usable
+  2019-12     609   usable
+  2020-01     773   usable
+  2020-02     767   usable
+  2020-03     286   lockdown / post-gap — excluded
+  2020-04      11   lockdown / post-gap — excluded
+  2020-05      75   lockdown / post-gap — excluded
+  2020-06      69   lockdown / post-gap — excluded
+  2020-07       0   NO DATA — collection gap
+  2020-08       0   NO DATA — collection gap
+  2020-09     239   lockdown / post-gap — excluded
+  2020-10     427   lockdown / post-gap — excluded
+  2020-11     287   lockdown / post-gap — excluded
+  2020-12     221   lockdown / post-gap — excluded
+
+Zero-row months: ['2020-07', '2020-08']
+These are NOT months without crashes. The feed is a Twitter scrape;
+absence of a tweet is absence of a report, not absence of an event.
+Any denominator covering these months is wrong by an unknown amount.
+
+ESTIMATION WINDOW: 2018-09 .. 2020-02  (18 months, 15,099 rows)
+Monthly range within window: 609 to 1,065
+No zero months, no partial months, no lockdown months inside it.
+
+==========================================================================
+STEP 5 — BUILD PANELS
+==========================================================================
+Monthly panel: 81 rows (54 inside the estimation window)
+
+Crashes inside the window, by corridor:
+  EDSA    5,429
+  OTHER   4,174
+  C5      1,680
+
+  EDSA  first 3 months  345.0/mo -> last 3 months  251.7/mo   (falling)
+  C5    first 3 months  101.0/mo -> last 3 months  114.0/mo   (rising)
+
+Hourly profile built from 11,182 in-window crashes with a parseable time.
+
+==========================================================================
+OUTPUTS
+==========================================================================
+  wrote results\processed\incidents_clean.csv
+  wrote results\processed\incident_monthly_panel.csv
+  wrote results\processed\incident_hourly_profile.csv
+  wrote results\figures\fig04_coverage_audit.png
+  wrote results\figures\fig05_corridor_monthly.png

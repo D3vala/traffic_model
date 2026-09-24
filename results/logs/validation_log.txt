@@ -1,0 +1,139 @@
+06_validation.py — run 2026-09-24 12:02:47
+Independent verification of the pipeline outputs.
+
+==========================================================================
+CHECK GROUP 1 — RECOUNT FROM THE RAW FILE
+==========================================================================
+Recomputes the headline counts straight from the uploaded CSV, using
+no processed file and none of the pipeline's helper functions.
+
+  [PASS] raw file row count is 17,312
+         found 17,312
+  [PASS] clean row count equals raw minus duplicates
+         clean 17,023 vs expected 17,023
+  [PASS] EDSA tagging is consistent under token matching
+         raw token match 8,453, clean regex 8,287, difference within the 289 removed duplicates
+  [PASS] crash classification is reproducible
+         raw 12,787, clean 12,570
+  [PASS] no row is both EDSA and C5
+
+==========================================================================
+CHECK GROUP 2 — WINDOW INTEGRITY
+==========================================================================
+The estimation window is the study's central design choice. These
+checks confirm it contains what it claims to contain.
+
+  [PASS] window contains exactly 18 months
+         2018-09 .. 2020-02
+  [PASS] window months are consecutive with no gap
+  [PASS] no month inside the window is empty
+         minimum monthly count 609
+  [PASS] the two known gap months are excluded from the window
+         2020-07 and 2020-08 hold zero rows in the source file
+  [PASS] no lockdown-period row is inside the window
+         0 rows on or after 2020-03-15
+  [PASS] the partial first month is excluded
+
+==========================================================================
+CHECK GROUP 3 — ARITHMETIC
+==========================================================================
+Rates and exposures are recomputed by hand from the panel.
+
+  [PASS] exposure equals AADT x days in month
+  [PASS] rate equals crashes / exposure, scaled
+  [PASS] EDSA window rate reproduces to 4 decimals
+         manual 2.529107 vs stored 2.529107
+  [PASS] C5 window rate reproduces to 4 decimals
+         manual 1.328402 vs stored 1.328402
+  [PASS] EDSA panel total matches the cleaned incident rows
+         incidents 5,429 vs panel 5,429
+  [PASS] C5 panel total matches the cleaned incident rows
+         incidents 1,680 vs panel 1,680
+
+==========================================================================
+CHECK GROUP 4 — SIMULATION BEHAVIOUR
+==========================================================================
+A simulation that cannot reproduce its own inputs is not a simulation.
+
+  [PASS] EDSA: proportionality holds under elasticity 1.0
+         largest deviation from the nominal change: 0.019
+  [PASS] C5: proportionality holds under elasticity 1.0
+         largest deviation from the nominal change: 0.024
+  [PASS] EDSA: expected crashes increase monotonically with volume
+  [PASS] EDSA: 5th percentile lies below the 95th in every scenario
+  [PASS] C5: expected crashes increase monotonically with volume
+  [PASS] C5: 5th percentile lies below the 95th in every scenario
+  [PASS] EDSA: simulation reproduces the model's end-of-window rate
+         simulated 2.1929 vs model-implied 2.1681 (ratio 1.011)
+         for context, the 18-month average rate was 2.5291; the end-of-window value differs because the fitted trend is negative
+  [PASS] C5: simulation reproduces the model's end-of-window rate
+         simulated 1.6185 vs model-implied 1.5812 (ratio 1.024)
+         for context, the 18-month average rate was 1.3284; the end-of-window value differs because the fitted trend is strongly positive
+  [PASS] EDSA: hourly shares sum to 1
+         sum 1.000000
+  [PASS] C5: hourly shares sum to 1
+         sum 1.000000
+
+==========================================================================
+CHECK GROUP 5 — IS THE TREND REAL, OR IS IT TWITTER?
+==========================================================================
+The outcome is a count of MMDA tweets about crashes. If the account
+posted less over time, every series would fall together and a model
+would report roads getting safer. This group tests for exactly that.
+
+Annual trend of each series across the 18-month window:
+  EDSA crashes                   -23.3%
+  C5 crashes                     +18.0%
+  crashes elsewhere              -18.3%
+  NON-crash reports (stalls,     -17.9%   <- pure feed-activity
+    roadworks, rallies)                        proxy: nothing to do
+                                               with road safety
+
+  [PASS] the non-crash feed is NOT stable, so a reporting control is required
+         non-crash reports move -17.9%/yr. Stalled buses and DPWH roadworks do not fall by this much in 18 months; the account is posting less.
+  [PASS] EDSA's apparent decline is close to the feed's own decline
+         EDSA -23.3%/yr vs feed -17.9%/yr — a difference of only 5.4 points. Most of EDSA's 'improvement' is the account going quiet. Reporting this as a safety gain would be the single most serious error available in this dataset.
+  [PASS] C5 moves AGAINST the feed, so its increase cannot be an artefact
+         C5 rises +18.0%/yr while the feed falls -17.9%/yr. A quieter account producing MORE C5 reports understates the real increase.
+  [PASS] the EDSA:C5 ratio falls, which a feed-wide change cannot explain
+         ratio 3.87 -> 1.84 (-35.0%/yr). Numerator and denominator come from the same feed on the same days, so a change affecting both corridors in the same proportion cancels exactly. A DIFFERENTIAL shift in attention toward C5 would still produce this, and nothing here rules that out.
+  [PASS] the fitted model includes the reporting control
+         log_feed coefficient = 0.155
+
+==========================================================================
+CHECK GROUP 6 — EXTERNAL CROSS-CHECK AGAINST PSA
+==========================================================================
+The PSA road-crash series is collected independently of the MMDA
+Twitter feed. The model never saw it. If the two disagree about the
+direction of 2018-2019, the model is describing an artefact.
+
+PSA Metro Manila totals: 2018 116,906  2019 121,771  2020 65,032
+MMDA Sep-Dec crash counts: 2018 2,752  2019 2,233 (-18.9%)
+PSA annual change 2018 to 2019: +4.2%
+  [PASS] PSA shows a higher Metro Manila crash total in 2019 than in 2018
+         PSA Metro Manila total rose +4.2%
+
+The two move in OPPOSITE directions, and check group 5 explains why.
+PSA counts every crash in Metro Manila by police report; it rose 4.2%.
+The MMDA feed counts tweets on two corridors, and its own posting
+volume fell about 18% over the same months. An independently collected
+series rising while a self-reported series falls is strong external
+evidence that the MMDA decline is a reporting effect rather than a
+safety improvement. The write-up must state this, not bury it: it is
+the difference between a defensible limitation and a false finding.
+  [PASS] PSA confirms the 2020 collapse used to justify excluding that year
+         PSA fell -46.6% in 2020, an independent corroboration that 2020 is not a normal year
+
+PSA 2020/2019 ratio: 0.534
+The MMDA feed cannot produce a comparable 2020 ratio at all, because
+July and August hold zero rows. That is precisely why the window stops
+at February 2020.
+(2019 MMDA crash rows, all corridors, for reference: 7,326)
+
+==========================================================================
+SUMMARY
+==========================================================================
+34 of 34 checks passed.
+No check failed.
+
+  wrote results\figures\fig10_psa_crosscheck.png

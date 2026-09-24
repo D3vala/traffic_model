@@ -1,0 +1,245 @@
+04_model.py — run 2026-09-24 12:02:44
+
+==========================================================================
+STEP 1 — JOIN CRASHES TO EXPOSURE
+==========================================================================
+In-window corridor rows: 36
+Every panel row matched an annual AADT value. No exposure is missing.
+
+Exposure unit: AADT x days_in_month = vehicle passages
+Rate unit: crashes per 100,000 vehicle passages
+
+Distinct AADT values available inside the window:
+  EDSA  3 values across years [np.int64(2018), np.int64(2019), np.int64(2020)]: ['328,114', '383,828', '405,882']
+  C5    3 values across years [np.int64(2018), np.int64(2019), np.int64(2020)]: ['192,418', '235,744', '236,060']
+
+This is why elasticity is not estimated here. Six exposure levels,
+confounded with a time trend, cannot identify a volume coefficient.
+
+Crash rate by corridor and year:
+  C5    2018   4 months    376 crashes  rate 1.3073
+  C5    2019  12 months  1,050 crashes  rate 1.2186
+  C5    2020   2 months    254 crashes  rate 2.2001
+  EDSA  2018   4 months  1,327 crashes  rate 2.8338
+  EDSA  2019  12 months  3,576 crashes  rate 2.4138
+  EDSA  2020   2 months    526 crashes  rate 2.6718
+
+  C5    window rate: 1.3284 per 100,000 passages
+  EDSA  window rate: 2.5291 per 100,000 passages
+
+EDSA / C5 rate ratio: 1.90
+EDSA carries far more traffic, so the raw count gap overstates the
+difference; normalising by exposure is what makes the two comparable.
+
+==========================================================================
+STEP 2 — FIT
+==========================================================================
+Reporting proxies: non-crash and total feed volume correlate at r = 0.857
+The non-crash series is used, because the total contains the crashes
+being modelled and would let the outcome explain itself.
+
+Trend estimates under three reporting specifications:
+
+  specification            EDSA /yr    C5 /yr  feed elast.       AIC
+  ----------------------------------------------------------------
+  A  no control              -20.5%     28.2%           --     387.8
+  B  total feed               -9.3%     46.8%         0.80     361.4
+  C  non-crash feed          -18.4%     31.8%         0.15     386.7
+
+  correlation between the time trend and the reporting proxy: r = -0.43
+
+Specification C is used. Comparing the three is not a formality — they
+disagree, and the disagreement is itself the finding.
+
+B assigns reporting a large elasticity and moves EDSA's decline sharply
+toward zero. That correction is inflated: B's covariate is total feed
+volume, which CONTAINS the crash counts being modelled, so the outcome
+partly explains itself. An earlier version of this study used B and
+concluded that most of EDSA's decline was a reporting effect. That
+conclusion was resting on a circularity.
+
+C removes the circularity and the reporting elasticity falls to a small
+value. EDSA's decline barely moves. The reason is visible in the
+correlation printed above: the reporting proxy and the time trend both
+fall across the window, so they compete for the same variance, and the
+trend term absorbs most of it. The regression cannot settle how much of
+the decline is reporting and how much is incidence.
+
+What survives all three specifications is the CONTRAST. EDSA falls and
+C5 rises in every one of them, and C5's increase is never smaller than
++28% per year. That is the robust result. The size of the reporting
+correction is not robust, and this study does not claim it.
+
+Poisson fit:  deviance 118.6  df 27
+Pearson dispersion statistic: 4.499
+
+Dispersion exceeds 1.2 — monthly counts are overdispersed relative
+to Poisson. A Poisson simulation would produce intervals that are
+too narrow and would overstate the precision of every scenario.
+Switching to Negative Binomial.
+Selected alpha = 0.0236 (NB Pearson dispersion 1.002)
+
+Model selection
+
+  model                                  AIC   dispersion   selected
+  ------------------------------------------------------------
+  Poisson                              386.7        4.499           
+  Negative Binomial (a=0.0236)         352.4        1.002        yes
+
+Selection rule: Poisson is retained when its Pearson dispersion is
+below 1.2; otherwise Negative Binomial is fitted with the
+overdispersion parameter chosen to return the fitted dispersion to
+approximately one. The rule is fixed in advance and the statistic is
+reported whichever way it falls.
+
+                 Generalized Linear Model Regression Results                  
+==============================================================================
+Dep. Variable:                crashes   No. Observations:                   36
+Model:                            GLM   Df Residuals:                       27
+Model Family:        NegativeBinomial   Df Model:                            8
+Link Function:                    Log   Scale:                          1.0000
+Method:                          IRLS   Log-Likelihood:                -167.19
+Date:                Thu, 24 Sep 2026   Deviance:                       25.907
+Time:                        12:02:45   Pearson chi2:                     27.1
+No. Iterations:                     6   Pseudo R-squ. (CS):             0.9808
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          z      P>|z|      [0.025      0.975]
+------------------------------------------------------------------------------
+const          1.0525      0.080     13.156      0.000       0.896       1.209
+is_c5         -0.9677      0.112     -8.606      0.000      -1.188      -0.747
+t             -0.0167      0.008     -2.039      0.041      -0.033      -0.001
+t_x_c5         0.0384      0.011      3.405      0.001       0.016       0.060
+sin1           0.0376      0.045      0.841      0.400      -0.050       0.125
+cos1           0.0915      0.050      1.816      0.069      -0.007       0.190
+sin2           0.0595      0.044      1.363      0.173      -0.026       0.145
+cos2          -0.0864      0.046     -1.869      0.062      -0.177       0.004
+log_feed       0.1546      0.215      0.718      0.472      -0.267       0.576
+==============================================================================
+
+Reading the coefficients:
+  EDSA baseline rate     : 2.8649 per 100,000 passages
+  C5 vs EDSA             : x0.380
+  EDSA monthly trend     : x0.9834 per month (-18.2% per year)
+  C5 monthly trend       : x1.0219 per month (+29.7% per year)
+  reporting intensity    : elasticity 0.15 (1.0 would mean counts track posting volume one for one)
+
+The two trends have opposite signs, and that contrast is the finding.
+C5 rises while EDSA falls across the same 18 months, on the same feed,
+with exposure already divided out and reporting intensity controlled.
+
+The two are not equally secure, and the write-up should not present them
+as though they were. C5's increase is robust: it holds under every
+reporting specification, and it occurred while the feed was getting
+quieter, which means a reporting explanation would have to argue that
+MMDA posted less overall while posting more about C5 specifically.
+
+EDSA's decline is NOT secure. A placebo series of non-crash reports —
+stalled vehicles, roadworks, things with no bearing on safety — falls at
+a similar rate, which is what a reporting effect looks like. But the
+regression cannot confirm it, because the reporting proxy and the time
+trend are correlated and compete for the same variance. The honest
+position is that this study cannot separate the two, and therefore
+cannot report EDSA's decline as a safety improvement. It is not that a
+reporting artefact has been proven; it is that one cannot be ruled out.
+
+Robustness — the EDSA:C5 count ratio:
+  falls from 3.87 to 1.84 across the window (-35.0% per year)
+
+  Numerator and denominator come from the same feed on the same days,
+  so any reporting change affecting BOTH corridors in the same
+  proportion cancels exactly. The decline is therefore not explained
+  by the account simply posting less overall.
+
+  It does NOT rule out a DIFFERENTIAL reporting change. If MMDA shifted
+  attention toward C5 over these months — a new camera, a redeployed
+  patrol, an operational focus — the ratio would fall with no change in
+  either corridor's actual safety. Nothing in this dataset distinguishes
+  that from genuine convergence, and the write-up must say so rather
+  than claiming the stronger result.
+
+==========================================================================
+STEP 3 — TEMPORAL HOLDOUT VALIDATION
+==========================================================================
+  Train: 2018-09 .. 2019-10   (14 months, 28 observations)
+  Test : 2019-11 .. 2020-02   (4 months, 8 observations)
+
+  Held-out months, observed vs predicted:
+    month     corridor  observed  predicted    error
+    ------------------------------------------------
+    2019-11   C5             100       81.8    -18.2
+    2019-11   EDSA           229      257.3     28.3
+    2019-12   C5              88       75.0    -13.0
+    2019-12   EDSA           229      231.4      2.4
+    2020-01   C5             120       68.1    -51.9
+    2020-01   EDSA           279      204.2    -74.8
+    2020-02   C5             134       64.3    -69.7
+    2020-02   EDSA           247      189.2    -57.8
+
+  corridor        MAE     RMSE     MAPE   mean obs
+  ------------------------------------------------
+  EDSA           40.8     49.4    15.9%      246.0
+  C5             38.2     44.9    32.1%      110.5
+
+  MAPE is the figure to quote: an absolute error of 20 crashes means
+  something different on EDSA, which averages roughly 300 a month, than
+  on C5, which averages around 100.
+
+  EDSA: mean signed error -25.5 — the model under-predicts the held-out months
+  C5: mean signed error -38.2 — the model under-predicts the held-out months
+
+  The errors are not random noise: C5 is under-predicted in every
+  held-out month and badly so in the last two. The model was fitted
+  through October 2019 and the C5 increase accelerated after that, so
+  the fitted trend is too shallow for what followed. This is a real
+  signal rather than a defect in the fit, and it strengthens rather
+  than weakens the C5 finding — but it also means the frozen-trend
+  simulation baseline is conservative for C5.
+
+  Read this as a sanity check, not as a performance claim. Four held-out
+  months per corridor is a small test set, and the model is predicting
+  within the same 18-month regime it was fitted in. It establishes that
+  the model is not merely memorising its training months; it does not
+  establish that it would forecast 2025.
+
+==========================================================================
+STEP 4 — TIME-OF-DAY PROFILE
+==========================================================================
+Share of crashes by hour (in-window, parseable times):
+  hr    EDSA     C5
+   0   0.015  0.006  ###
+   1   0.007  0.003  #
+   2   0.003  0.005  #
+   3   0.003  0.003  #
+   4   0.013  0.005  ###
+   5   0.029  0.011  ######
+   6   0.052  0.036  ##########
+   7   0.077  0.068  ###############
+   8   0.073  0.077  ###############
+   9   0.067  0.060  #############
+  10   0.057  0.051  ###########
+  11   0.055  0.075  ###########
+  12   0.049  0.053  ##########
+  13   0.031  0.037  ######
+  14   0.054  0.066  ###########
+  15   0.069  0.107  ##############
+  16   0.066  0.092  #############
+  17   0.054  0.051  ###########
+  18   0.050  0.046  ##########
+  19   0.051  0.041  ##########
+  20   0.041  0.045  ########
+  21   0.025  0.037  #####
+  22   0.032  0.010  ######
+  23   0.027  0.014  #####
+
+Modal hour: EDSA 7:00, C5 15:00
+Share between midnight and 05:00: EDSA 4.1%, C5 2.3%
+
+==========================================================================
+OUTPUTS
+==========================================================================
+  wrote data/processed/rate_panel.csv
+  wrote data/processed/model_params.json
+  wrote results/tables/model_summary.txt
+  wrote results\figures\fig06_rate_comparison.png
+  wrote results\figures\fig07_hourly_profile.png

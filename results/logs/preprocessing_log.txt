@@ -1,0 +1,144 @@
+MMDA Traffic Incident Simulation — preprocessing log
+Generated: 2026-09-24 12:02:42
+
+MMDA TRAFFIC INCIDENT SIMULATION — PREPROCESSING
+Run: 2026-09-24 12:02:42
+
+========================================================================
+STEP 1 — Load raw AADT
+========================================================================
+  Loaded AADT_2014_2025_combined.csv
+  Shape: 252 rows x 13 columns
+  Years: 2014–2025
+  Rows per year: [21]
+
+========================================================================
+STEP 2 — Separate network aggregate rows (DEFECT 1)
+========================================================================
+  Aggregate rows removed from road table: 12
+  Road rows retained: 240
+  [OK]   Consistent 20 roads per year
+
+========================================================================
+STEP 3 — Repair missing road codes (DEFECT 3)
+========================================================================
+  Rows with no Code: 24
+  Affected roads: MARCOS HIGHWAY, MARCOS HWY., MCARTHUR HIGHWAY, MCARTHUR HWY.
+  [OK]   Assigned synthetic codes to 24 rows
+
+========================================================================
+STEP 4 — Canonicalise road names (DEFECTS 4 and 5)
+========================================================================
+  Codes with more than one spelling: 7
+    C:2: ['MENDOZA', 'PRES QUIRINO AVE.', 'PRES. QUIRINO', 'PRES. QUIRINO AVE.']
+    C:4: ['EDSA', 'EDSA (BUENDIA AVE)', 'EDSA (BUENDIA AVE.)']
+    C:5: ['C.P. GARCIA / KATIPUNAN / TANDANG SORA', 'KATIPUNAN / C.P. GARCIA']
+    R:11: ['MARCOS HIGHWAY', 'MARCOS HWY.']
+    R:12: ['MCARTHUR HIGHWAY', 'MCARTHUR HWY.']
+    R:6: ['AURORA BLVD.', 'MAGSAYSAY BLVD.']
+    R:7: ['COMMONWEALTH AVE.', 'QUEZON AVE.']
+  [WARN] C5 segment definition changes at 2018: 'KATIPUNAN / C.P. GARCIA' -> 'C.P. GARCIA / KATIPUNAN / TANDANG SORA'. Do not report a C5 growth rate spanning 2017->2018.
+  [OK]   Codes with a single canonical name after mapping: 14/17
+
+========================================================================
+STEP 5 — Verify the 2017 vehicle reclassification (DEFECT 2)
+========================================================================
+  Non-null counts for the reclassified columns:
+    2014: UV=  0  TAXI=  0
+    2015: UV=  0  TAXI=  0
+    2016: UV=  0  TAXI=  0
+    2017: UV= 20  TAXI= 20
+    2018: UV= 20  TAXI= 20
+    2019: UV= 20  TAXI= 20
+    2020: UV= 20  TAXI= 20
+    2021: UV= 20  TAXI= 20
+    2022: UV= 20  TAXI= 20
+    2023: UV= 20  TAXI= 20
+    2024: UV= 20  TAXI= 20
+    2025: UV= 20  TAXI= 20
+
+  Reclassification signature, 2016 -> 2017:
+    CAR decrease:             218,566
+    UV + TAXI appearing:      233,607
+    Unexplained residual:     -15,041
+  [OK]   Signature confirmed: the CAR decrease is accounted for by the classes split out of it. This is a coding change, not a change in traffic.
+
+  RULE ENFORCED: total volume is comparable across all years;
+  vehicle composition is comparable only WITHIN an era.
+
+========================================================================
+STEP 6 — Reconcile vehicle classes against TOTAL (DEFECT 6)
+========================================================================
+  Rows failing reconciliation: 17 of 240
+  By year:
+    2014:  1 rows, largest discrepancy         10
+    2016: 11 rows, largest discrepancy     16,341
+    2017:  1 rows, largest discrepancy          2
+    2025:  4 rows, largest discrepancy     20,000
+  [OK]   No focal road (EDSA, C5) fails reconciliation in any year. The defect does not touch the study's exposure series.
+
+========================================================================
+STEP 7 — Build focal-road exposure table
+========================================================================
+  Focal road-years: 24
+  Rows inside the model window ([2018, 2019, 2020]): 6
+
+  Exposure series (annual vehicle passages):
+    Year     EDSA AADT     EDSA exposure     C5 AADT       C5 exposure
+    2014       360,417       131,552,205     178,429        65,126,585
+    2015       367,675       134,201,375     194,119        70,853,435
+    2016       364,781       133,145,065     218,155        79,626,575
+    2017       367,728       134,220,720     218,751        79,844,115
+    2018       383,828       140,097,220     235,744        86,046,560 *
+    2019       405,882       148,146,930     236,060        86,161,900 *
+    2020       328,114       119,761,610     192,418        70,232,570 *
+    2021       372,271       135,878,915     212,285        77,484,025
+    2022       385,096       140,560,040     211,819        77,313,935
+    2023       407,342       148,679,830     238,695        87,123,675
+    2024       419,952       153,282,480     250,762        91,528,130
+    2025       421,728       153,930,720     225,885        82,448,025
+    (* = year with both incident and exposure data)
+
+========================================================================
+STEP 8 — Simulation baseline
+========================================================================
+  Baseline year: 2025
+    C5: AADT 225,885  exposure 82,448,025/yr
+    EDSA: AADT 421,728  exposure 153,930,720/yr
+
+  Scenario exposures (what-if, NOT forecasts):
+    Scenario         EDSA AADT       C5 AADT
+    baseline           421,728       225,885
+    plus_10            463,901       248,474
+    plus_20            506,074       271,062
+    plus_30            548,246       293,650
+
+========================================================================
+STEP 9 — MMDA incidents
+========================================================================
+  Loaded 17,312 records
+  [WARN] Validate the classification rules against the real column names.
+
+========================================================================
+STEP 10 — EDSA violations
+========================================================================
+
+========================================================================
+STEP 11 — PSA crashes
+========================================================================
+
+========================================================================
+OUTPUTS
+========================================================================
+  aadt_clean.csv                  240 rows
+  aadt_network_totals.csv          12 rows
+  exposure_focal.csv               24 rows
+
+========================================================================
+SUMMARY
+========================================================================
+  Warnings raised: 2
+  Warnings are expected. Each one is a documented data defect that
+  belongs in the limitations section of the paper.
+
+  NEXT: upload the MMDA incident file to unblock steps 4-6.

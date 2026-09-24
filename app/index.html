@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>MMDA Traffic Crash Simulator: EDSA and C5</title>
+<meta name="description" content="A simulation built on 18 months of MMDA incident reports. Choose a traffic scenario to see the yearly count, the busiest hours, and the stretches of road involved.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231E2329'/%3E%3Crect x='7' y='21' width='18' height='4' rx='2' fill='%23F6C945'/%3E%3Ccircle cx='16' cy='12' r='5.5' fill='%23F6C945'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500&family=Barlow+Condensed:wght@600&family=Barlow+Semi+Condensed:wght@600&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<noscript><p class="noscript-msg">This page needs JavaScript to run the simulation viewer.</p></noscript>
+
+<div id="load-error" class="load-error" hidden>
+  <p>The simulation data didn't load. Check that <code>data/app-data.js</code> sits next to <code>index.html</code>, then reload.</p>
+</div>
+
+<div id="app">
+
+<!-- ============================== HERO ============================== -->
+<header class="hero" id="hero">
+  <div class="container">
+    <div class="hero-top">
+      <p class="credit-line">Group 9 – AM3</p>
+      <a class="hero-link" href="#trust">About the data</a>
+    </div>
+
+    <h1 class="hero-title">If traffic grows, how many more crashes get reported?</h1>
+    <p class="hero-sub">A simulation built on 18 months of MMDA incident reports. Choose a traffic scenario to see the yearly count, the busiest hours, and the stretches of road involved.</p>
+
+    <div class="slider-block">
+      <label class="slider-label" for="road-slider">Traffic volume compared with 2025</label>
+
+      <div class="road-strip" id="road-strip">
+        <svg class="lane-line" aria-hidden="true" focusable="false" preserveAspectRatio="none" viewBox="0 0 1000 4">
+          <line x1="0" y1="2" x2="1000" y2="2" stroke="var(--paint)" stroke-width="2" stroke-dasharray="18 14"></line>
+        </svg>
+        <div class="lane lane-top" id="lane-top" aria-hidden="true"></div>
+        <div class="lane lane-bottom" id="lane-bottom" aria-hidden="true"></div>
+        <input type="range" id="road-slider" min="0" max="3" step="1" value="0"
+               aria-label="Traffic volume compared with 2025"
+               aria-valuetext="Traffic at 2025 levels">
+        <div class="thumb-plate" id="thumb-plate" aria-hidden="true"><span id="thumb-value">Today</span></div>
+      </div>
+
+      <div class="stop-row" role="group" aria-label="Traffic scenarios">
+        <button type="button" class="stop-btn is-selected" data-stop="0" aria-pressed="true">Today</button>
+        <button type="button" class="stop-btn" data-stop="1" aria-pressed="false">+10%</button>
+        <button type="button" class="stop-btn" data-stop="2" aria-pressed="false">+20%</button>
+        <button type="button" class="stop-btn" data-stop="3" aria-pressed="false">+30%</button>
+      </div>
+
+      <p class="traffic-line" id="traffic-line">EDSA would carry about <strong id="tl-edsa">421,728</strong> vehicles a day. C5 about <strong id="tl-c5">225,885</strong>.</p>
+    </div>
+  </div>
+</header>
+
+<!-- sticky compact bar, appears after the hero scrolls away -->
+<div class="sticky-bar" id="sticky-bar" hidden>
+  <div class="container sticky-inner">
+    <div class="stop-row stop-row-compact" role="group" aria-label="Traffic scenarios">
+      <button type="button" class="stop-btn is-selected" data-stop="0" aria-pressed="true">Today</button>
+      <button type="button" class="stop-btn" data-stop="1" aria-pressed="false">+10%</button>
+      <button type="button" class="stop-btn" data-stop="2" aria-pressed="false">+20%</button>
+      <button type="button" class="stop-btn" data-stop="3" aria-pressed="false">+30%</button>
+    </div>
+    <button type="button" class="copy-btn copy-btn-light" data-copy>Copy link</button>
+  </div>
+</div>
+
+<main id="main">
+<!-- ========================= RESULTS ========================= -->
+<section class="section section-results" id="results" aria-labelledby="results-h">
+  <div class="container">
+    <div class="section-head">
+      <h2 id="results-h">Reported crashes in one year</h2>
+      <div class="assumption">
+        <span class="assumption-label" id="assumption-label">If traffic goes up, crashes go up…</span>
+        <div class="segmented" role="radiogroup" aria-labelledby="assumption-label" id="assumption-group">
+          <button type="button" role="radio" aria-checked="false" data-e="0.8" tabindex="-1">more slowly</button>
+          <button type="button" role="radio" aria-checked="true" data-e="1.0" tabindex="0">in step</button>
+          <button type="button" role="radio" aria-checked="false" data-e="1.2" tabindex="-1">faster</button>
+        </div>
+        <div class="popover-wrap">
+          <button type="button" class="help-btn" id="assumption-help" aria-expanded="false" aria-controls="assumption-popover">?</button>
+          <div class="popover" id="assumption-popover" role="dialog" aria-label="About this assumption" hidden>
+            This is an assumption. The data can't measure how crashes respond to traffic, so you can try three values.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel-grid">
+      <!-- EDSA panel -->
+      <article class="panel" id="panel-EDSA" aria-labelledby="plate-EDSA">
+        <div class="panel-head">
+          <span class="route-plate" id="plate-EDSA">EDSA<span class="route-bar" aria-hidden="true"></span></span>
+          <span class="panel-meta" id="meta-EDSA">421,728 vehicles a day in 2025</span>
+        </div>
+        <p class="big-number" id="big-EDSA">3,376</p>
+        <p class="big-caption">reported crashes a year, average of 1,000 simulated years</p>
+        <div class="rangeplot" id="rangeplot-EDSA"></div>
+        <p class="range-sentence" id="range-EDSA">In 9 of 10 simulated years, EDSA had between 2,559 and 4,427 reported crashes.</p>
+        <div class="stat-row">
+          <p class="stat-delta" id="delta-EDSA">This is today's level.</p>
+          <p class="stat-rate"><strong id="rate-EDSA">2.22</strong> per 100,000 vehicle passages</p>
+        </div>
+      </article>
+
+      <!-- C5 panel -->
+      <article class="panel" id="panel-C5" aria-labelledby="plate-C5">
+        <div class="panel-head">
+          <span class="route-plate" id="plate-C5">C5<span class="route-bar" aria-hidden="true"></span></span>
+          <span class="panel-meta" id="meta-C5">225,885 vehicles a day in 2025</span>
+        </div>
+        <p class="big-number" id="big-C5">1,334</p>
+        <p class="big-caption">reported crashes a year, average of 1,000 simulated years</p>
+        <div class="rangeplot" id="rangeplot-C5"></div>
+        <p class="range-sentence" id="range-C5">In 9 of 10 simulated years, C5 had between 836 and 2,018 reported crashes.</p>
+        <div class="stat-row">
+          <p class="stat-delta" id="delta-C5">This is today's level.</p>
+          <p class="stat-rate"><strong id="rate-C5">1.62</strong> per 100,000 vehicle passages</p>
+        </div>
+      </article>
+    </div>
+
+    <p class="note-line">EDSA carries about 1.8 times the traffic of C5 and is reported more often on MMDA's feed, so compare the rate per 100,000 vehicle passages, not the counts.</p>
+    <p class="note-line note-quiet">Simulated averages carry a few points of random noise: a 10% traffic rise can show as 11 or 12%. The range matters more than the exact figure.</p>
+  </div>
+</section>
+
+<!-- ========================= WHEN AND WHERE ========================= -->
+<section class="section section-when" id="when-where" aria-labelledby="when-h">
+  <div class="container">
+    <h2 id="when-h">When and where they happen</h2>
+    <p class="section-intro">Reported crashes by hour of day, and where along each road they were reported. Press Play to step through a day.</p>
+
+    <div class="when-grid">
+      <div class="chart-block">
+        <p class="axis-note">Reported crashes a year in that hour</p>
+        <div class="hourchart" id="hourchart"></div>
+
+        <div class="chart-controls">
+          <button type="button" class="play-btn" id="play-btn" aria-pressed="false">Play</button>
+          <button type="button" class="allday-btn" id="allday-btn" aria-pressed="false">All day</button>
+          <span class="showing" id="showing-label">All day</span>
+        </div>
+
+        <p class="peak-sentence" id="peak-sentence"></p>
+        <p class="note-quiet">Overnight hours rest on very few reports, so read them loosely.</p>
+      </div>
+
+      <div class="map-block">
+        <div class="zonemap" id="zonemap">
+          <div class="map-tooltip" id="map-tooltip" role="presentation" hidden></div>
+        </div>
+        <p class="map-caption">Circle size shows how many reported crashes fall in each stretch at the chosen hour. Stretches are approximate and were cut to hold equal shares of past reports, so no stretch is a hotspot over the full day.</p>
+      </div>
+    </div>
+
+    <p class="vh" id="hour-live" aria-live="polite"></p>
+
+    <!-- visually hidden data tables (accessible equivalents of the charts) -->
+    <div class="vh">
+      <table id="table-hourly">
+        <caption>Expected reported crashes per year by hour of day, current scenario</caption>
+        <thead><tr><th scope="col">Hour</th><th scope="col">EDSA</th><th scope="col">C5</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <table id="table-map">
+        <caption>Expected reported crashes per year by zone at the selected time</caption>
+        <thead><tr><th scope="col">Corridor</th><th scope="col">Zone</th><th scope="col">Reported crashes a year</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <table id="table-panels">
+        <caption>Annual reported crashes, mean and 5th to 95th percentile, current scenario and assumption</caption>
+        <thead><tr><th scope="col">Corridor</th><th scope="col">Mean</th><th scope="col">5th</th><th scope="col">95th</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ========================= TRUST ========================= -->
+<section class="section section-trust" id="trust" aria-labelledby="trust-h">
+  <div class="container">
+    <div class="trust-card">
+      <h2 id="trust-h">How far to trust this</h2>
+      <ol class="trust-list">
+        <li><strong>These are reported crashes.</strong> The data is MMDA's Twitter feed. A missing tweet is not a missing crash.</li>
+        <li><strong>Past trends are not projected.</strong> EDSA's reports fell over the study window, but the feed itself got quieter, and independent PSA data moved the other way. The simulation holds the trend at its end-of-window level.</li>
+        <li><strong>The traffic response is assumed.</strong> How much crashes rise with traffic can't be measured from this data, so the assumption selector tries three values.</li>
+        <li><strong>Eighteen months of data.</strong> September 2018 to February 2020. Later months are excluded because of the lockdown and two months with no records.</li>
+        <li><strong>Zones are approximate.</strong> Five stretches per road, cut from GPS points. They show where reports fell, not where a vehicle is most at risk.</li>
+      </ol>
+
+      <details class="details-block" id="validation-details">
+        <summary><span class="badge" id="validation-badge">34 of 34 checks passed</span></summary>
+        <div class="details-body">
+          <ul>
+            <li><strong>Recount from the raw file:</strong> the headline counts are recomputed straight from the uploaded CSV, using no processed files.</li>
+            <li><strong>Window integrity:</strong> the estimation window holds exactly 18 consecutive months, none of them empty, with lockdown months excluded.</li>
+            <li><strong>Arithmetic:</strong> rates and exposures are recomputed by hand from the panel and must match to four decimals.</li>
+            <li><strong>Simulation behaviour:</strong> counts rise with volume, percentiles stay ordered, and the simulated rates reproduce the model's own implications.</li>
+            <li><strong>Is the trend real or Twitter?:</strong> non-crash posts fall at the same rate as crash posts, so the feed's own activity is used as a reporting control.</li>
+            <li><strong>Outside check against PSA data:</strong> an independently collected series confirms the 2019 level and the 2020 collapse.</li>
+          </ul>
+          <p>The count model and event model agree within <span id="agreement-pct">1.6</span>%.</p>
+        </div>
+      </details>
+
+      <details class="details-block">
+        <summary>How the simulation works</summary>
+        <div class="details-body">
+          <ol>
+            <li>Count only the 12,570 rows MMDA classified as crashes, on EDSA and C5, inside September 2018 – February 2020.</li>
+            <li>Fit a <strong>Negative Binomial</strong> model — a count model that allows more spread than a plain average — to 36 corridor-months, with traffic volume as the exposure denominator and a control for how often the account posted.</li>
+            <li>Hold the fitted trend frozen at the end of the window, because projecting an 18-month trend forward would be extrapolation the data does not support.</li>
+            <li>Draw 1,000 simulated years per scenario, each carrying sampling noise, parameter uncertainty, and one of three <strong>elasticity</strong> assumptions — elasticity is how strongly crashes respond to traffic, swept at 0.8, 1.0, and 1.2 because the data cannot measure it.</li>
+            <li>Place every simulated crash into a zone and an hour using the historical joint profile; the event layer and the count model agree within 1.6%. In held-out testing (Nov 2019 – Feb 2020) the typical error was about 16% for EDSA and 32% for C5.</li>
+          </ol>
+        </div>
+      </details>
+    </div>
+  </div>
+</section>
+
+
+
+</main>
+
+<!-- ============================== FOOTER ============================== -->
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <p class="footer-credit">Group 9 – AM3 · BACALLA, M.D.P. · CASTILLO, C.R.M. · CUEVA, X.L.A</p>
+    <p class="footer-sources">Data sources: MMDA incident feed (Aug 2018 – Dec 2020) · NCTS/MMDA traffic counts (AADT) · PSA road crash statistics · MMDA EDSA violations</p>
+    <p class="footer-run" id="footer-run">Simulation run — · 1,000 runs per scenario · seed —</p>
+    <button type="button" class="copy-btn copy-btn-dark" data-copy>Copy link</button>
+  </div>
+</footer>
+
+</div><!-- /#app -->
+
+<script src="data/app-data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,91 @@
+05_simulation.py — run 2026-09-24 12:02:46
+Monte Carlo runs per scenario: 1,000
+
+==========================================================================
+STEP 1 — LOAD FITTED MODEL
+==========================================================================
+Family: negbin  alpha: 0.0236
+Estimation window: 2018-09 .. 2020-02 (18 months)
+Baseline year for exposure: 2025
+
+  EDSA  2025 AADT: 421,728
+  C5    2025 AADT: 225,885
+
+Fitted window rates (crashes per 100,000 passages):
+  C5    1.3284
+  EDSA  2.5291
+
+==========================================================================
+STEP 2 — SIMULATE
+==========================================================================
+Uncertainty carried: sampling (Negative Binomial), parameter (coefficient draws),
+and structural (elasticity sweep). Trend frozen at end of window by default.
+
+==========================================================================
+STEP 3 — RESULTS (trend frozen, elasticity 1.0)
+==========================================================================
+corridor scenario        mean      5th     95th   vs base
+---------------------------------------------------------
+EDSA     baseline       3,376    2,559    4,427      0.0%
+EDSA     plus_10        3,778    2,805    4,965     11.9%
+EDSA     plus_20        4,061    3,063    5,244     20.3%
+EDSA     plus_30        4,411    3,262    5,761     30.7%
+C5       baseline       1,334      836    2,018      0.0%
+C5       plus_10        1,470      901    2,275     10.1%
+C5       plus_20        1,633      990    2,486     22.4%
+C5       plus_30        1,766    1,091    2,699     32.3%
+
+Sensitivity to the elasticity assumption, +30% volume scenario:
+  EDSA  e=0.8: 4,205   e=1.0: 4,411   e=1.2: 4,638
+  C5    e=0.8: 1,656   e=1.0: 1,766   e=1.2: 1,860
+
+The spread across elasticities is the honest width of the answer.
+Quoting a single number without it would be false precision.
+
+Effect of continuing the fitted trend instead of freezing it (baseline scenario):
+  EDSA  frozen    3,376   continued    3,047   (-10%)
+  C5    frozen    1,334   continued    1,599   (+20%)
+Trend continuation is reported as a sensitivity only. An 18-month
+trend extrapolated for a year is already a stretch; further is fiction.
+
+==========================================================================
+STEP 4 — ALLOCATE TO HOURS OF THE DAY
+==========================================================================
+Expected crashes per year by hour, baseline scenario:
+  hr    EDSA     C5
+   0     50.0    8.0
+   1     23.8    4.0
+   2     10.6    7.2
+   3     10.6    4.0
+   4     45.0    7.2
+   5     97.5   15.2
+   6    176.3   48.0
+   7    261.3   91.2
+   8    245.7  103.2
+   9    225.0   80.0
+  10    193.8   68.0
+  11    184.4  100.0
+  12    165.7   70.4
+  13    103.1   48.8
+  14    181.9   88.0
+  15    232.5  143.2
+  16    222.5  122.4
+  17    182.5   68.0
+  18    167.5   60.8
+  19    173.8   54.4
+  20    136.9   60.0
+  21     84.4   49.6
+  22    108.8   13.6
+  23     91.9   19.2
+
+EDSA: modal hour 07:00, busiest 4 hours carry 28.6% of all crashes
+
+C5: modal hour 15:00, busiest 4 hours carry 35.1% of all crashes
+
+==========================================================================
+OUTPUTS
+==========================================================================
+  wrote results/tables/simulation_results.csv
+  wrote results/tables/simulation_hourly.csv
+  wrote results\figures\fig08_scenarios.png
+  wrote results\figures\fig09_elasticity_sweep.png
