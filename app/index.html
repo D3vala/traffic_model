@@ -195,7 +195,7 @@
         <li><strong>Past trends are not projected.</strong> EDSA's reports fell over the study window, but the feed itself got quieter, and independent PSA data moved the other way. The simulation holds the trend at its end-of-window level.</li>
         <li><strong>The traffic response is assumed.</strong> How much crashes rise with traffic can't be measured from this data, so the assumption selector tries three values.</li>
         <li><strong>Eighteen months of data.</strong> September 2018 to February 2020. Later months are excluded because of the lockdown and two months with no records.</li>
-        <li><strong>Zones are approximate.</strong> Five stretches per road, cut from GPS points. They show where reports fell, not where a vehicle is most at risk.</li>
+        <li><strong>Zones are approximate.</strong> <span id="zone-count">6</span> stretches per road, cut from GPS points. They show where reports fell, not where a vehicle is most at risk.</li>
       </ol>
 
       <details class="details-block" id="validation-details">
@@ -221,7 +221,7 @@
             <li>Fit a <strong>Negative Binomial</strong> model — a count model that allows more spread than a plain average — to 36 corridor-months, with traffic volume as the exposure denominator and a control for how often the account posted.</li>
             <li>Hold the fitted trend frozen at the end of the window, because projecting an 18-month trend forward would be extrapolation the data does not support.</li>
             <li>Draw 1,000 simulated years per scenario, each carrying sampling noise, parameter uncertainty, and one of three <strong>elasticity</strong> assumptions — elasticity is how strongly crashes respond to traffic, swept at 0.8, 1.0, and 1.2 because the data cannot measure it.</li>
-            <li>Place every simulated crash into a zone and an hour using the historical joint profile; the event layer and the count model agree within 1.6%. In held-out testing (Nov 2019 – Feb 2020) the typical error was about 16% for EDSA and 32% for C5.</li>
+            <li>Place every simulated crash into a zone and an hour using the historical joint profile; the event layer and the count model agree within <span id="how-agreement-pct">—</span>%. In held-out testing (Nov 2019 – Feb 2020) the typical error was about 16% for EDSA and 32% for C5.</li>
           </ol>
         </div>
       </details>

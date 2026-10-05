@@ -322,6 +322,8 @@
     $("validation-badge").textContent =
       m.validation.passed + " of " + m.validation.total + " checks passed";
     $("agreement-pct").textContent = m.eventVsCountMaxDiffPct.toFixed(1);
+    $("how-agreement-pct").textContent = m.eventVsCountMaxDiffPct.toFixed(1);
+    $("zone-count").textContent = String(m.zonesPerRoad);
 
     // auto-generated peak sentence, fixed by the hourly profile itself
     var parts = CORRIDORS.map(function (c) {
@@ -759,7 +761,7 @@
   var mapRefs = null;      // corridor → [ { circle, halo, p } ]
 
   function projectZones() {
-    // fit all ten centroids into the viewBox with padding, north (lat) up
+    // Fit every exported centroid into the viewBox with padding, north up.
     var pts = [];
     CORRIDORS.forEach(function (c) {
       D.corridors[c].zones.forEach(function (z) { pts.push({ c: c, z: z }); });
@@ -783,7 +785,7 @@
       p.py = offY + (maxY - p.y) * s;      // flip: high latitude → top
       (byCorridor[p.c] = byCorridor[p.c] || []).push(p);
     });
-    CORRIDORS.forEach(function (c) {          // zone 1 south → zone 5 north
+    CORRIDORS.forEach(function (c) {          // zones ordered south → north
       byCorridor[c].sort(function (a, b) { return a.z.n - b.z.n; });
     });
     return byCorridor;
@@ -817,7 +819,11 @@
     // south / north end labels
     svg.appendChild(el("text", { class: "zm-label", x: 6, y: MAP_H - 8 },
                        "Zone 1 (south)"));
-    svg.appendChild(el("text", { class: "zm-label", x: 6, y: 26 }, "Zone 5 (north)"));
+    var northZone = Math.max.apply(null, CORRIDORS.map(function (c) {
+      return D.corridors[c].zones.length;
+    }));
+    svg.appendChild(el("text", { class: "zm-label", x: 6, y: 26 },
+                       "Zone " + northZone + " (north)"));
 
     mapRefs = {};
 
@@ -894,7 +900,7 @@
     $("table-map").querySelector("tbody").innerHTML = rows.join("");
 
     mapRefs.svg.setAttribute("aria-label",
-      "Schematic map of five approximate zones on each corridor, drawn without " +
+      "Schematic map of " + D.meta.zonesPerRoad + " approximate zones on each corridor, drawn without " +
       "a basemap. " + selectedTimeText() +
       (state.hour == null
         ? " Circles are neutral because all-day totals are equal by construction."

@@ -4,9 +4,9 @@ export_app_data.py — build the web app's data bundle from the notebook's outpu
 Reads (all produced by MMDA_Traffic_Simulation.ipynb, see brief §5.1):
   results/tables/simulation_results.csv           headline means/percentiles (trend == "frozen")
   results/processed/model_params.json             hourShare, alpha, window, rate_per, window_rate
-  results/processed/approximate_spatial_zones.csv zone centroids (10 rows)
+  results/processed/approximate_spatial_zones.csv zone centroids
   results/tables/event_zone_hour_summary.csv      Step 8 joint zone x hour profile
-  results/tables/event_scenario_summary.csv       Step 8 scenario means + rates (elasticity 1.0)
+  results/tables/event_scenario_summary.csv       Step 8 scenario means + rates (all assumptions)
   results/tables/event_vs_count_comparison.csv    Step 6 vs Step 8 agreement
   results/processed/exposure_focal.csv            2025 AADT per corridor
   results/processed/incident_monthly_panel.csv    window crash totals per corridor
@@ -48,7 +48,8 @@ DAYS_2025 = 365  # 2025 is not a leap year; cfg.DAYS_PER_YEAR = 365 in Step 1
 STATED_AADT_2025 = {"EDSA": 421728, "C5": 225885}
 STATED_WINDOW_CRASHES = {"EDSA": 5429, "C5": 1680}
 
-# Appendix B (sanity check only; the CSV is authoritative). Tolerance ±1 for rounding.
+# Prior Step 6 reference (sanity only; CSVs are authoritative). Tolerance ±1.
+# Tuple second values record the original Step 8 run, not the regenerated run.
 APPENDIX_B = {
     ("EDSA", "baseline"): (3376, 3418),
     ("EDSA", "plus_10"): (3778, 3763),
@@ -63,6 +64,19 @@ APPENDIX_B = {
 
 def log(msg=""):
     print(msg)
+
+
+def load_notebook_settings():
+    nb = json.loads((ROOT / "MMDA_Traffic_Simulation.ipynb").read_text(encoding="utf-8"))
+    code = "\n".join("".join(cell["source"]) for cell in nb["cells"]
+                     if cell["cell_type"] == "code")
+    settings = {}
+    for name in ("ZONES_PER_ROAD", "EVENT_RUNS"):
+        match = re.search(rf"^{name}\s*=\s*(\d+)\s*$", code, re.MULTILINE)
+        assert match, f"could not read {name} from the notebook"
+        settings[name] = int(match.group(1))
+        assert settings[name] > 0, f"{name} must be positive"
+    return settings
 
 
 # ---------------------------------------------------------------------------
@@ -140,13 +154,16 @@ def load_model_params():
 # Zones and the Step 8 zone-given-hour profile
 # ---------------------------------------------------------------------------
 
-def load_zones():
+def load_zones(settings):
     z = pd.read_csv(RESULTS / "processed" / "approximate_spatial_zones.csv")
-    assert len(z) == 10, f"expected 10 zones, found {len(z)}"
+    count = settings["ZONES_PER_ROAD"]
+    assert len(z) == len(CORRIDORS) * count, f"expected {len(CORRIDORS) * count} zones, found {len(z)}"
     zones = {}
     for c in CORRIDORS:
         rows = z[z["road"] == c].sort_values("zone").reset_index(drop=True)
-        assert len(rows) == 5, f"{c}: expected 5 zones, found {len(rows)}"
+        assert len(rows) == count, f"{c}: expected {count} zones, found {len(rows)}"
+        expected_ids = [f"{c}_ZONE_{i:02d}" for i in range(1, count + 1)]
+        assert rows["zone"].tolist() == expected_ids, f"{c}: zone IDs do not match the notebook"
         zones[c] = [
             {
                 "n": i + 1,
@@ -157,19 +174,19 @@ def load_zones():
             }
             for i, r in rows.iterrows()
         ]
-    # Equal-count construction: all-day totals per zone are identical by design.
+    # Equal-count construction: historical zone counts differ by at most one.
     for c in CORRIDORS:
         counts = {z_["historicalReports"] for z_ in zones[c]}
         assert max(counts) - min(counts) <= 1, (
             f"{c} zones are not equal-count splits: {sorted(counts)}"
         )
-    log("  zones               5 per corridor, equal-count splits verified")
+    log(f"  zones               {count} per corridor, equal-count splits verified")
     return zones
 
 
-def load_zone_given_hour():
+def load_zone_given_hour(zones):
     """P(zone | hour) from the Step 8 joint profile, baseline / elasticity 1.0,
-    normalised within each hour (brief §5.4). Hours with no rows get 0.2 each."""
+    normalised within each hour. Hours with no rows get equal zone shares."""
     ev = pd.read_csv(RESULTS / "tables" / "event_zone_hour_summary.csv")
     ev = ev[(ev["scenario"] == "baseline") & np.isclose(ev["elasticity"], DEFAULT_ELASTICITY)]
     ev = ev[ev["hour"].astype(str).str.fullmatch(r"\d{2}")].copy()
@@ -178,8 +195,10 @@ def load_zone_given_hour():
     out = {}
     for c in CORRIDORS:
         rows_c = ev[ev["corridor"] == c]
-        zone_ids = [f"{c}_ZONE_{i:02d}" for i in range(1, 6)]
-        table = np.full((24, 5), np.nan)
+        zone_ids = [zone["id"] for zone in zones[c]]
+        count = len(zone_ids)
+        assert set(rows_c["zone"]) == set(zone_ids), f"{c}: event profile zones do not match centroids"
+        table = np.full((24, count), np.nan)
         for h in range(24):
             rh = rows_c[rows_c["hour_i"] == h]
             if rh.empty:
@@ -189,16 +208,16 @@ def load_zone_given_hour():
                 m = rh[rh["zone"] == zid]
                 vals.append(float(m["mean_annual_events"].sum()) if len(m) else 0.0)
             total = sum(vals)
-            table[h] = [v / total for v in vals] if total > 0 else [0.2] * 5
+            table[h] = [v / total for v in vals] if total > 0 else [1.0 / count] * count
         # Fill any hour with no rows at all.
         for h in range(24):
             if np.isnan(table[h]).all():
-                table[h] = [0.2] * 5
+                table[h] = [1.0 / count] * count
         assert not np.isnan(table).any(), f"{c}: zoneGivenHour has missing hours"
         row_sums = table.sum(axis=1)
         assert np.allclose(row_sums, 1.0, atol=1e-6), f"{c}: zoneGivenHour rows do not sum to 1"
         out[c] = [[float(x) for x in row] for row in table]
-    log("  zoneGivenHour       24 x 5 per corridor, every row sums to 1")
+    log("  zoneGivenHour       24 hours x exported zones, every row sums to 1")
     return out
 
 
@@ -234,25 +253,11 @@ def load_window_crashes():
     return {c: int(totals[c]) for c in CORRIDORS}
 
 
-def load_rates(annual):
-    """Rate per 100,000 vehicle passages.
-
-    Elasticity 1.0 comes verbatim from event_scenario_summary.csv (brief §5.1).
-    Step 8 only ran elasticity 1.0, so 0.8 and 1.2 are anchored to those table
-    values and scaled by the ratio of Step 6 means — exposure is identical
-    across assumptions, so rate ratios equal mean ratios (see NOTES.md #3)."""
+def load_rates(settings):
+    """Rates for all assumptions come from the regenerated Step 8 event table."""
     ev = pd.read_csv(RESULTS / "tables" / "event_scenario_summary.csv")
-    ev = ev[np.isclose(ev["elasticity"], DEFAULT_ELASTICITY)]
-    assert len(ev) == len(CORRIDORS) * len(SCENARIOS), "event_scenario_summary rows unexpected"
-
-    base_rate = {}
-    for c in CORRIDORS:
-        base_rate[c] = {}
-        for key, _, _ in SCENARIOS:
-            r = float(ev[(ev["corridor"] == c) & (ev["scenario"] == key)]
-                      ["mean_rate_per_100k"].iloc[0])
-            assert 0.5 < r < 5.0, f"implausible rate {r} for {c}/{key}"
-            base_rate[c][key] = r
+    assert len(ev) == len(CORRIDORS) * len(SCENARIOS) * len(ELASTICITIES), "event_scenario_summary rows unexpected"
+    assert (ev["runs"] == settings["EVENT_RUNS"]).all(), "event run counts do not match the notebook"
 
     out = {}
     for c in CORRIDORS:
@@ -260,16 +265,13 @@ def load_rates(annual):
         for e in ELASTICITIES:
             entry = {}
             for key, _, _ in SCENARIOS:
-                if e == DEFAULT_ELASTICITY:
-                    entry[key] = base_rate[c][key]
-                else:
-                    # exposure identical across assumptions => rate ratio = mean ratio
-                    scale = (annual[c][str(e)][key]["mean"]
-                             / annual[c][str(DEFAULT_ELASTICITY)][key]["mean"])
-                    entry[key] = base_rate[c][key] * scale
-                assert entry[key] > 0
+                rows = ev[(ev["corridor"] == c) & (ev["scenario"] == key)
+                          & np.isclose(ev["elasticity"], e)]
+                assert len(rows) == 1, f"expected one event rate for {c}/{e}/{key}"
+                entry[key] = float(rows.iloc[0]["mean_rate_per_100k"])
+                assert 0.5 < entry[key] < 5.0, f"implausible rate for {c}/{e}/{key}"
             out[c][str(e)] = entry
-    log("  ratePer100k         1.0 from event_scenario_summary; 0.8/1.2 scaled by mean ratio")
+    log("  ratePer100k         all three assumptions from event_scenario_summary")
     return out
 
 
@@ -277,7 +279,7 @@ def load_rates(annual):
 # Meta
 # ---------------------------------------------------------------------------
 
-def load_meta():
+def load_meta(settings):
     val_log = (RESULTS / "logs" / "validation_log.txt").read_text(encoding="utf-8", errors="replace")
     m = re.search(r"(\d+)\s+of\s+(\d+)\s+checks passed", val_log)
     assert m, "could not parse validation pass count"
@@ -294,14 +296,18 @@ def load_meta():
     baseline_year = int(re.search(r"BASELINE_YEAR\s*=\s*(\d+)", nb_src).group(1))
 
     cmp_df = pd.read_csv(RESULTS / "tables" / "event_vs_count_comparison.csv")
-    max_diff = round(float(cmp_df["difference_pct"].abs().max()), 1)
-    assert max_diff <= 1.65, f"event vs count disagreement {max_diff}% exceeds 1.6%"
+    raw_max_diff = float(cmp_df["difference_pct"].abs().max())
+    # Match the notebook's Step 8.8b gate, rather than the previous run's result.
+    assert raw_max_diff < 5.0, f"event vs count disagreement {raw_max_diff}% exceeds the notebook's 5% gate"
+    max_diff = round(raw_max_diff, 1)
 
     params = json.loads((RESULTS / "processed" / "model_params.json").read_text())
     return {
         "source": "MMDA_Traffic_Simulation.ipynb",
         "runDate": run_date,
         "runsPerScenario": runs,
+        "eventRunsPerScenario": settings["EVENT_RUNS"],
+        "zonesPerRoad": settings["ZONES_PER_ROAD"],
         "seed": seed,
         "baselineYear": baseline_year,
         "estimationWindow": params["estimation_window"],
@@ -320,12 +326,15 @@ def load_meta():
 # ---------------------------------------------------------------------------
 
 def reconcile(annual):
+    events = pd.read_csv(RESULTS / "tables" / "event_scenario_summary.csv")
+    events = events[np.isclose(events["elasticity"], DEFAULT_ELASTICITY)]
     log("")
-    log("  Reconciliation vs Appendix B (tolerance ±1 for rounding):")
-    log(f"    {'corridor':<9}{'scenario':<11}{'exported':>10}{'Appx B S6':>11}{'Appx B S8':>11}   ok")
+    log("  Reconciliation vs Step 6 reference, with regenerated Step 8 counts:")
+    log(f"    {'corridor':<9}{'scenario':<11}{'exported':>10}{'Appx B S6':>11}{'current S8':>11}   ok")
     log("    " + "-" * 57)
     ok_all = True
-    for (c, key), (b6, b8) in APPENDIX_B.items():
+    for (c, key), (b6, _) in APPENDIX_B.items():
+        b8 = round(float(events[(events["corridor"] == c) & (events["scenario"] == key)]["mean"].iloc[0]))
         got = round(annual[c]["1.0"][key]["mean"])
         ok = abs(got - b6) <= 1
         ok_all &= ok
@@ -337,14 +346,15 @@ def reconcile(annual):
 def main():
     log("export_app_data.py — building app data bundle")
     log("")
+    settings = load_notebook_settings()
     annual = load_annual()
     params, hour_share = load_model_params()
-    zones = load_zones()
-    zone_given_hour = load_zone_given_hour()
+    zones = load_zones(settings)
+    zone_given_hour = load_zone_given_hour(zones)
     aadt = load_exposure()
     window_crashes = load_window_crashes()
-    rates = load_rates(annual)
-    meta = load_meta()
+    rates = load_rates(settings)
+    meta = load_meta(settings)
 
     bundle = {
         "meta": meta,

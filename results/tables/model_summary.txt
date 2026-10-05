@@ -5,8 +5,8 @@ Model:                            GLM   Df Residuals:                       27
 Model Family:        NegativeBinomial   Df Model:                            8
 Link Function:                    Log   Scale:                          1.0000
 Method:                          IRLS   Log-Likelihood:                -167.19
-Date:                Thu, 24 Sep 2026   Deviance:                       25.907
-Time:                        12:02:45   Pearson chi2:                     27.1
+Date:                Mon, 05 Oct 2026   Deviance:                       25.907
+Time:                        22:53:02   Pearson chi2:                     27.1
 No. Iterations:                     6   Pseudo R-squ. (CS):             0.9808
 Covariance Type:            nonrobust                                         
 ==============================================================================

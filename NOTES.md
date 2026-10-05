@@ -56,7 +56,7 @@ The road slider: dragging traffic from Today to +30% increases the vehicle count
 
 1. **Project root.** The brief's tree names the root `mmda-crash-simulator/`; this workspace *is* the project root (it holds the notebook, `data/`, `results/`), so `scripts/` and `app/` were created directly under `c:\Users\mearv\Documents\CSS142`.
 2. **Notebook run.** `results/` did not exist, so the notebook was executed end-to-end (`python -m nbconvert --execute`) on 2026-09-24. All cells completed without error; validation reports 34 of 34 checks passed. `meta.runDate` is parsed from `results/logs/simulation_log.txt` (the actual run date, 2026-09-24 — the brief's schema example showed 2026-09-23 as a placeholder).
-3. **Rates for assumptions 0.8 and 1.2.** `event_scenario_summary.csv` only ran elasticity 1.0 (Step 8 uses `EVENT_ELASTICITIES = [1.0]`). The exported rate for 1.0 is the event table verbatim (EDSA 2.22, C5 1.62 at baseline, as the brief shows). For 0.8 and 1.2 the rate is anchored to that table and scaled by the ratio of Step 6 means: `rate(c,e,s) = event_rate(c,s) × mean(c,e,s) / mean(c,1.0,s)`. Exposure is identical across assumptions, so the ratio of rates equals the ratio of means — this is arithmetic on two notebook tables, not a new statistic. It keeps the rate continuous when the assumption selector crosses 1.0.
+3. **Rates for all three assumptions.** The revised notebook runs Step 8 at elasticities 0.8, 1.0, and 1.2. Each exported rate now comes directly from its matching row in `event_scenario_summary.csv`; the previous scaling workaround for 0.8 and 1.2 is no longer needed. Headline counts still come from Step 6's frozen-trend results, so small Monte Carlo differences between the two simulations remain expected.
 4. **Peak share rounding.** The peak sentence shows 28.6% / 35.1% (the notebook's own figures) rather than the rounded 29% / 35% sketched in the wireframe — the notebook wins under "the notebook is the single source of truth."
 5. **`windowCrashes`** (5,429 EDSA / 1,680 C5) is summed from `results/processed/incident_monthly_panel.csv` (`in_window == True`) and cross-checked against the validation log.
 6. **Stretch S1 ("Draw a simulated year") is skipped** — it needs `np.percentile` changes inside the notebook's `simulate()`, and the brief says to skip it if the 99 quantiles are not already exported. They are not. `annualQuantiles` is `null`. S2 (Poisson day replay) is also skipped as stretch; the sticky control bar and Copy link (the other "Should" items) are implemented.
@@ -70,7 +70,7 @@ The road slider: dragging traffic from Today to +30% increases the vehicle count
 
 ## Open questions for the team
 
-1. Should the rate shown beside the headline count be Step 6-derived (count ÷ exposure = 2.19 for EDSA Today) instead of the Step 8 event-table value (2.22)? The brief designates `event_scenario_summary.csv` for the rate line, so 2.22 is used; the ~1.3% gap is the documented Step 6 vs Step 8 Monte Carlo difference (both are notebook tables).
+1. Should the rate shown beside the headline count be Step 6-derived (count ÷ exposure) instead of the Step 8 event-table value? The app currently follows `event_scenario_summary.csv` for all rates; `event_vs_count_comparison.csv` documents the Monte Carlo differences between the two simulations.
 2. If S1 is wanted later, add `np.percentile(arr, range(1, 100))` to `simulate()` in the notebook and re-run; the export script writes `annualQuantiles` as `null` until such a file appears.
 
 
@@ -89,6 +89,14 @@ Executed headlessly against `file://` (no server), default state and `#s=30&e=1.
 ### Hero traffic density update (2026-10-05)
 
 The original Phase 7 vehicle counts above are historical. The current hero uses 40 / 44 / 48 / 52 active cars on desktop and 20 / 22 / 24 / 26 on narrow screens for Today / +10% / +20% / +30%. Code-level interaction checks passed for both button rows, the slider, breakpoint changes, saved scenarios, stable animation phases, animated/static spacing, and offscreen pause. JavaScript syntax and app-data consistency checks passed. The supplied screenshots were reviewed as layout references; a fresh desktop/mobile browser review was unavailable because the browser tool rejected local-file URLs. Existing screenshots predate this change.
+
+### Revised notebook run (2026-10-05)
+
+Imported `Downloads/MMDA_Traffic_Simulation (1).ipynb` into the project source notebook. Preserved its revised Colab path and held-out error-decomposition report, 1,000 event runs per scenario, six zones per corridor, and event elasticities 0.8 / 1.0 / 1.2. Updated stale five-zone and 500-run comments to match these settings and cleared prior outputs from the source; `MMDA_Traffic_Simulation_executed.ipynb` records the completed fresh run. Previous notebooks and input hashes are retained under `.repo-sync/notebook-backup/`.
+
+Regenerated all results: 12 zone centroids, 24 event scenario/assumption/corridor summaries, and the corresponding figures, profiles, allocation tables, and sample events. All 34 main validation checks, seven event checks, and the Step 6/8 agreement gate passed; maximum count disagreement is 1.9% (the notebook requires less than 5%). All four source CSV hashes are unchanged.
+
+The exporter now reads the zone count and event run count from the notebook, preserves every zone in the 24-hour conditional profile, and exports event-table rates for every assumption. The webpage derives its northern-zone label, zone description, and agreement text from the bundle. Independent checks verify zone IDs/dimensions against generated centroids, rates/run counts against the regenerated event table, and all existing reconciliations. Historical verification entries above describe earlier runs and are superseded by this run where settings or numbers changed.
 
 ## Additional deviations discovered during build
 
