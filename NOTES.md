@@ -30,7 +30,7 @@ Fallbacks: `"Barlow Condensed","Arial Narrow",system-ui,sans-serif` (same patter
 
 ### Layout, one sentence per section
 
-1. **Hero (asphalt):** credit line and "About the data" link, H1 + subline, then the one bold object — a 96px road strip whose paint-yellow thumb slides between four scenario stops while 10–13 CSS vehicles drift across two lanes — followed by a live line of AADT × (1 + change).
+1. **Hero (asphalt):** credit line and "About the data" link, H1 + subline, then the one bold object — a 96px road strip whose paint-yellow thumb slides between four scenario stops while 40–52 CSS vehicles drift across two lanes (20–26 on screens up to 719px wide) — followed by a live line of AADT × (1 + change).
 2. **Reported crashes in one year (concrete):** heading left, assumption segmented control right, then two flat paper panels (route plate, big mean, fixed-axis range plot with Today hairline, plain range sentence, delta + rate) over the count-vs-rate note and the MC-noise footnote.
 3. **When and where (concrete):** SVG hour chart (two direct-labelled lines, top-4 dots, peak callout, draggable hour cursor, Play/Pause + All day) beside the schematic zone map (equal-count stretches, hour-scaled circles, required caption); one auto-generated peak sentence and the overnight-noise caveat below.
 4. **How far to trust this (paper):** five plain-language caveats with a 3px paint left border, the "34 of 34 checks passed" pill opening a `<details>` of the six check groups, and a `<details>` explaining the simulation in five steps (the only place jargon appears).
@@ -49,7 +49,7 @@ Fallbacks: `"Barlow Condensed","Arial Narrow",system-ui,sans-serif` (same patter
 
 ### One-liner for the memorable moment
 
-The road slider: dragging traffic from Today to +30% makes paint-yellow vehicles physically crowd the strip while the two panels and the day replay below answer with the same scenario — one control, whole-page consequence.
+The road slider: dragging traffic from Today to +30% increases the vehicle count proportionally while the two panels and the day replay below answer with the same scenario — one control, whole-page consequence. Extra cars enter distributed gaps; equal speeds keep cars from overlapping. Reduced-motion positions remain evenly spaced, and offscreen or hidden-tab traffic pauses.
 
 
 ## Assumptions (made to keep moving, per brief §0)
@@ -85,6 +85,10 @@ Executed headlessly against `file://` (no server), default state and `#s=30&e=1.
 - **Reduced motion:** emulated `prefers-reduced-motion: reduce` → vehicles `animation: none` at a static position, band transition `0.001s`.
 - **Projector fold:** at 1366×768 the hero plus the tops of both result panels are visible without scrolling.
 - **Lighthouse (headless Chrome, served over `http://127.0.0.1:8765`):** Accessibility **100**, Best Practices **100**, no audit below 1. The only issue found on the first pass was `errors-in-console`: the static server 404s on `/favicon.ico`, because the page declared no icon. Fixed with an inline SVG data-URI icon, so the page makes no icon request at all and scores 100 on the rerun. Contrast, link/button names, `label`, `meta-viewport`, `html-has-lang`, `document-title` and `deprecations` all pass.
+
+### Hero traffic density update (2026-10-05)
+
+The original Phase 7 vehicle counts above are historical. The current hero uses 40 / 44 / 48 / 52 active cars on desktop and 20 / 22 / 24 / 26 on narrow screens for Today / +10% / +20% / +30%. Code-level interaction checks passed for both button rows, the slider, breakpoint changes, saved scenarios, stable animation phases, animated/static spacing, and offscreen pause. JavaScript syntax and app-data consistency checks passed. The supplied screenshots were reviewed as layout references; a fresh desktop/mobile browser review was unavailable because the browser tool rejected local-file URLs. Existing screenshots predate this change.
 
 ## Additional deviations discovered during build
 

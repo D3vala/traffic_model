@@ -263,6 +263,11 @@ html.tab-hidden * { animation-play-state: paused !important; }
 
 .lane-top .vehicle    { animation: drive var(--dur) linear infinite; animation-delay: var(--delay); }
 .lane-bottom .vehicle  { animation: drive var(--dur) linear infinite; animation-delay: var(--delay); }
+.road-strip.is-paused .vehicle { animation-play-state: paused; }
+
+@media (max-width: 719px) {
+  .vehicle { width: 14px; }
+}
 
 @media (prefers-reduced-motion: reduce) {
   .vehicle { animation: none !important; left: var(--x); }

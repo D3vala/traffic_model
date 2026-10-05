@@ -152,28 +152,48 @@
   // Hero: vehicles, road slider, stops, live traffic line, sticky bar
   // ---------------------------------------------------------------------
 
-  // Deterministic vehicle schedule: 13 slots, two lanes, 16–24s per pass.
-  // Active count = round(10 x (1 + change)) → 10, 11, 12, 13.
-  var VEHICLE_COUNT = 13;
+  // A denser baseline, scaled by the same traffic change as the figures.
+  // Desktop: 40 / 44 / 48 / 52 cars; narrow screens: 20 / 22 / 24 / 26.
+  var narrowRoad = window.matchMedia("(max-width: 719px)");
+  var baselineVehicleCount = 40;
   var vehicleNodes = [];
 
   function buildVehicles() {
     var lanes = [$("lane-top"), $("lane-bottom")];
-    for (var i = 0; i < VEHICLE_COUNT; i++) {
+    baselineVehicleCount = narrowRoad.matches ? 20 : 40;
+    var maxChange = Math.max.apply(null, D.scenarios.map(function (s) { return s.change; }));
+    var capacity = Math.round(baselineVehicleCount * (1 + maxChange));
+    var basePerLane = baselineVehicleCount / lanes.length;
+    var extraPerLane = Math.ceil((capacity - baselineVehicleCount) / lanes.length);
+    vehicleNodes = [];
+    lanes.forEach(function (lane) { lane.textContent = ""; });
+
+    for (var i = 0; i < capacity; i++) {
       var lane = lanes[i % 2];
       var v = document.createElement("span");
       v.className = "vehicle";
-      var dur = 16 + ((i * 7) % 9);                    // 16..24s, deterministic
+      var slot = Math.floor(i / 2);
+      var phase;
+      if (i < baselineVehicleCount) {
+        phase = (slot + 0.5) / basePerLane;
+      } else {
+        // Insert extra cars into distributed gaps without moving existing cars.
+        var extra = Math.floor((i - baselineVehicleCount) / 2);
+        var gap = extra % 2 === 0 ? Math.floor(extra / 2)
+          : Math.ceil(extraPerLane / 2) + Math.floor(extra / 2);
+        phase = (Math.floor(gap * basePerLane / extraPerLane) + 1) / basePerLane;
+      }
+      phase = (phase + (i % 2) * 0.25 / basePerLane) % 1;
+      var dur = 20;   // Equal speeds preserve spacing instead of piling cars up.
       v.style.setProperty("--dur", dur + "s");
-      v.style.setProperty("--delay", (-(i * dur) / VEHICLE_COUNT).toFixed(2) + "s");
-      v.style.setProperty("--x", (4 + i * 7.3).toFixed(1) + "%");  // reduced-motion rest spot
+      v.style.setProperty("--delay", (-phase * dur).toFixed(3) + "s");
       lane.appendChild(v);
       vehicleNodes.push(v);
     }
   }
 
   function activeVehicleCount() {
-    return Math.round(10 * (1 + scenario().change));
+    return Math.round(baselineVehicleCount * (1 + scenario().change));
   }
 
   function sliderValueText(idx) {
@@ -204,6 +224,11 @@
     var n = activeVehicleCount();
     vehicleNodes.forEach(function (v, i) {
       v.classList.toggle("is-hidden", i >= n);
+      if (i < n) {
+        // Static traffic stays evenly spaced when reduced motion is enabled.
+        var laneCount = Math.ceil((n - i % 2) / 2);
+        v.style.setProperty("--x", ((Math.floor(i / 2) + 0.5) * 94 / laneCount).toFixed(2) + "%");
+      }
     });
 
     // live line: AADT x (1 + change), whole vehicles
@@ -219,6 +244,11 @@
   }
 
   function wireHero() {
+    narrowRoad.addEventListener("change", function () {
+      buildVehicles();
+      renderHero();
+    });
+
     $("road-slider").addEventListener("input", function (ev) {
       setScenario(Number(ev.target.value));
     });
@@ -235,6 +265,7 @@
     if ("IntersectionObserver" in window) {
       var io = new IntersectionObserver(function (entries) {
         bar.hidden = entries[0].isIntersecting;
+        $("road-strip").classList.toggle("is-paused", !entries[0].isIntersecting);
       }, { rootMargin: "-80px 0px 0px 0px" });
       io.observe($("road-strip"));
     }
