@@ -1,8 +1,8 @@
-05_simulation.py â€” run 2026-09-24 10:06:57
+05_simulation.py — run 2026-10-05 22:53:03
 Monte Carlo runs per scenario: 1,000
 
 ==========================================================================
-STEP 1 â€” LOAD FITTED MODEL
+STEP 1 — LOAD FITTED MODEL
 ==========================================================================
 Family: negbin  alpha: 0.0236
 Estimation window: 2018-09 .. 2020-02 (18 months)
@@ -16,13 +16,13 @@ Fitted window rates (crashes per 100,000 passages):
   EDSA  2.5291
 
 ==========================================================================
-STEP 2 â€” SIMULATE
+STEP 2 — SIMULATE
 ==========================================================================
 Uncertainty carried: sampling (Negative Binomial), parameter (coefficient draws),
 and structural (elasticity sweep). Trend frozen at end of window by default.
 
 ==========================================================================
-STEP 3 â€” RESULTS (trend frozen, elasticity 1.0)
+STEP 3 — RESULTS (trend frozen, elasticity 1.0)
 ==========================================================================
 corridor scenario        mean      5th     95th   vs base
 ---------------------------------------------------------
@@ -49,7 +49,7 @@ Trend continuation is reported as a sensitivity only. An 18-month
 trend extrapolated for a year is already a stretch; further is fiction.
 
 ==========================================================================
-STEP 4 â€” ALLOCATE TO HOURS OF THE DAY
+STEP 4 — ALLOCATE TO HOURS OF THE DAY
 ==========================================================================
 Expected crashes per year by hour, baseline scenario:
   hr    EDSA     C5
@@ -87,5 +87,5 @@ OUTPUTS
 ==========================================================================
   wrote results/tables/simulation_results.csv
   wrote results/tables/simulation_hourly.csv
-  wrote results/figures/fig08_scenarios.png
-  wrote results/figures/fig09_elasticity_sweep.png
+  wrote results\figures\fig08_scenarios.png
+  wrote results\figures\fig09_elasticity_sweep.png

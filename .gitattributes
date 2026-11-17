@@ -1,0 +1,2 @@
+# Preserve PDF files as binary assets.
+*.pdf binary

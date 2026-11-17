@@ -1,8 +1,8 @@
-06_validation.py â€” run 2026-09-24 10:06:58
+06_validation.py — run 2026-10-05 22:53:03
 Independent verification of the pipeline outputs.
 
 ==========================================================================
-CHECK GROUP 1 â€” RECOUNT FROM THE RAW FILE
+CHECK GROUP 1 — RECOUNT FROM THE RAW FILE
 ==========================================================================
 Recomputes the headline counts straight from the uploaded CSV, using
 no processed file and none of the pipeline's helper functions.
@@ -18,7 +18,7 @@ no processed file and none of the pipeline's helper functions.
   [PASS] no row is both EDSA and C5
 
 ==========================================================================
-CHECK GROUP 2 â€” WINDOW INTEGRITY
+CHECK GROUP 2 — WINDOW INTEGRITY
 ==========================================================================
 The estimation window is the study's central design choice. These
 checks confirm it contains what it claims to contain.
@@ -35,7 +35,7 @@ checks confirm it contains what it claims to contain.
   [PASS] the partial first month is excluded
 
 ==========================================================================
-CHECK GROUP 3 â€” ARITHMETIC
+CHECK GROUP 3 — ARITHMETIC
 ==========================================================================
 Rates and exposures are recomputed by hand from the panel.
 
@@ -51,7 +51,7 @@ Rates and exposures are recomputed by hand from the panel.
          incidents 1,680 vs panel 1,680
 
 ==========================================================================
-CHECK GROUP 4 â€” SIMULATION BEHAVIOUR
+CHECK GROUP 4 — SIMULATION BEHAVIOUR
 ==========================================================================
 A simulation that cannot reproduce its own inputs is not a simulation.
 
@@ -75,7 +75,7 @@ A simulation that cannot reproduce its own inputs is not a simulation.
          sum 1.000000
 
 ==========================================================================
-CHECK GROUP 5 â€” IS THE TREND REAL, OR IS IT TWITTER?
+CHECK GROUP 5 — IS THE TREND REAL, OR IS IT TWITTER?
 ==========================================================================
 The outcome is a count of MMDA tweets about crashes. If the account
 posted less over time, every series would fall together and a model
@@ -92,7 +92,7 @@ Annual trend of each series across the 18-month window:
   [PASS] the non-crash feed is NOT stable, so a reporting control is required
          non-crash reports move -17.9%/yr. Stalled buses and DPWH roadworks do not fall by this much in 18 months; the account is posting less.
   [PASS] EDSA's apparent decline is close to the feed's own decline
-         EDSA -23.3%/yr vs feed -17.9%/yr â€” a difference of only 5.4 points. Most of EDSA's 'improvement' is the account going quiet. Reporting this as a safety gain would be the single most serious error available in this dataset.
+         EDSA -23.3%/yr vs feed -17.9%/yr — a difference of only 5.4 points. Most of EDSA's 'improvement' is the account going quiet. Reporting this as a safety gain would be the single most serious error available in this dataset.
   [PASS] C5 moves AGAINST the feed, so its increase cannot be an artefact
          C5 rises +18.0%/yr while the feed falls -17.9%/yr. A quieter account producing MORE C5 reports understates the real increase.
   [PASS] the EDSA:C5 ratio falls, which a feed-wide change cannot explain
@@ -101,7 +101,7 @@ Annual trend of each series across the 18-month window:
          log_feed coefficient = 0.155
 
 ==========================================================================
-CHECK GROUP 6 â€” EXTERNAL CROSS-CHECK AGAINST PSA
+CHECK GROUP 6 — EXTERNAL CROSS-CHECK AGAINST PSA
 ==========================================================================
 The PSA road-crash series is collected independently of the MMDA
 Twitter feed. The model never saw it. If the two disagree about the
@@ -136,4 +136,4 @@ SUMMARY
 34 of 34 checks passed.
 No check failed.
 
-  wrote results/figures/fig10_psa_crosscheck.png
+  wrote results\figures\fig10_psa_crosscheck.png
