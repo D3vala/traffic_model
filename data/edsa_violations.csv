@@ -1,0 +1,17 @@
+﻿Code,2014,2015,2016,2017,2018,Description
+1,21262,17373,21926,34331,32155,Obstruction
+2,,,,,5434,Loading/Unloading in prohibited zone
+2A,8257,5395,7819,10316,8420,"Loading/Unloading in prohibited zone(as of July 12,2022)(MC -8-12)"
+3,14181,13220,17252,39018,44433,Disregarding Traffic Sign
+4,1435,1599,1546,2060,3113,Reckless Driving
+5,,,,,4018,Stalled Vehicle
+6A,2173,945,,,2883,Illegal Parking (Not Towed)
+6B,,,,,1896,Illegal Parking (Towed)
+7,5254,,,,,"Truck Ban (Apprehension on July 31, 2014 down)"
+10,5552,3181,3851,7654,,Bus/PUJ lane ordinance
+10B,1359,128,1261,7671,,Private vehicle using yellow lane
+19A,,,1546,5610,,"Open door (w/o conductor) (as of July 12, 2012) (MC 08-12)"
+176,7264,6595,9754,13702,,Unified Vehicle Volume reduction program
+214,2246,1556,1408,,,"Bus Segregation Scheme (as of July 12, 2012) (as of July 12, 2012) (MC - 08-12)"
+221,,1217,1776,2665,2446,"Truck Ban (as of August 1, 2014) (MMDA res# 14-14 Series of 2014)"
+221A,,,,3063,5870,"Truck Ban (Light) (as of March 7, 2017) (MMDA res# 17-001 Series of 2017)"
