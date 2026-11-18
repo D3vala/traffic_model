@@ -5,7 +5,7 @@ EVENT-LEVEL SPATIOTEMPORAL ALLOCATION WORK (MEMBER 3)
 ==========================================================================
 STEP 8.3 — APPROXIMATE SPATIAL ZONES & BOUNDARIES
 ==========================================================================
-Saved: C:\Users\Lenovo\Documents\traffic_model_A\results\processed\zone_boundaries.csv (12 zones)
+Saved: C:\Users\Lenovo\Documents\traffic_simulation\results\processed\zone_boundaries.csv (12 zones)
 corridor         zone  historical_reports  latitude  longitude  projected_min  projected_max
     EDSA EDSA_ZONE_01                 905 14.548485 121.024971      -7.907934      -3.793407
     EDSA EDSA_ZONE_02                 905 14.570234 121.046831      -3.793407      -1.699312
@@ -59,7 +59,7 @@ Sep-Feb only, which each appear in two years. This is NO EVIDENCE FOR A MONTH
 EFFECT, not evidence that one is absent; it does not justify month-specific
 allocation with the data currently available.
 
-Saved: C:\Users\Lenovo\Documents\traffic_model_A\results\processed\monthly_zone_hour_profile.csv (3444 rows) at best FINITE kappa=10000
+Saved: C:\Users\Lenovo\Documents\traffic_simulation\results\processed\monthly_zone_hour_profile.csv (3444 rows) at best FINITE kappa=10000
 
 ==========================================================================
 STEP 8.5 — REPRODUCE MONTHLY COUNTS (RNG SEED AND DRAW ORDER PRESERVED)
