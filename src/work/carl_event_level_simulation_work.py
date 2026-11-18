@@ -132,8 +132,8 @@ def compute_zone_boundaries(incidents, log_buffer):
                 "corridor": road,
                 "zone": zone,
                 "historical_reports": len(grp),
-                "latitude": grp["Latitude"].mean(),
-                "longitude": grp["Longitude"].mean(),
+                "centroid_lat": grp["Latitude"].mean(),
+                "centroid_lon": grp["Longitude"].mean(),
                 "projected_min": grp["projected_km"].min(),
                 "projected_max": grp["projected_km"].max(),
             })
@@ -252,12 +252,12 @@ def fit_monthly_profile(historical, p0_df, log_buffer):
         log("months at least as well as any finite kappa. The exported month-aware profile", log_buffer)
         log("is supplied for review only; neither method is promoted to the main model.", log_buffer)
         log("", log_buffer)
-        log("SCOPE OF THE KAPPA COMPARISON: the held-out Mar-Aug months have no other-year", log_buffer)
-        log("data in the 18-month window (they occur once, in 2019), so no other-year month", log_buffer)
-        log("is available to validate against. The kappa comparison therefore rests on", log_buffer)
-        log("Sep-Feb only, which each appear in two years. This is NO EVIDENCE FOR A MONTH", log_buffer)
-        log("EFFECT, not evidence that one is absent; it does not justify month-specific", log_buffer)
-        log("allocation with the data currently available.", log_buffer)
+        log("SCOPE OF THE KAPPA COMPARISON: when held out, the Mar-Aug months have no", log_buffer)
+        log("other-year data in the 18-month window (they occur once, in 2019), so no", log_buffer)
+        log("other-year month is available to validate against. Only Sep-Feb months, each", log_buffer)
+        log("present in two years, provide evidence for the kappa comparison. The finding is", log_buffer)
+        log('"no evidence for a month effect" with the data currently available; it does not', log_buffer)
+        log("justify month-specific allocation.", log_buffer)
     log("", log_buffer)
 
     # Export the full smoothed monthly profile at the best FINITE kappa.
