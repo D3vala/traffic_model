@@ -48,11 +48,7 @@ ROWS = [
             "The incident source is the MMDA social-media feed. Raw Source "
             "fields are Twitter status URLs."
         ),
-        "psa_series": (
-            "The PSA Yearbook identifies the Metropolitan Manila Accident "
-            "Recording and Analysis System (MMARAS) as the source for its "
-            "Metro Manila road-crash statistics."
-        ),
+        "psa_series": PLACEHOLDER,
         "source": (
             "PSA, 2024 Philippine Statistical Yearbook, Table 17.9: "
             "https://psa.gov.ph/system/files/psy/2024-Philippine-Statistical-Yearbook.pdf; "
