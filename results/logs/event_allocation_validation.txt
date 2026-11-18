@@ -5,20 +5,20 @@ EVENT-LEVEL SPATIOTEMPORAL ALLOCATION WORK (MEMBER 3)
 ==========================================================================
 STEP 8.3 — APPROXIMATE SPATIAL ZONES & BOUNDARIES
 ==========================================================================
-Saved: C:\Users\Lenovo\Documents\traffic_simulation\results\processed\zone_boundaries.csv (12 zones)
-corridor         zone  historical_reports  latitude  longitude  projected_min  projected_max
-    EDSA EDSA_ZONE_01                 905 14.548485 121.024971      -7.907934      -3.793407
-    EDSA EDSA_ZONE_02                 905 14.570234 121.046831      -3.793407      -1.699312
-    EDSA EDSA_ZONE_03                 905 14.582262 121.054220      -1.594546      -0.810992
-    EDSA EDSA_ZONE_04                 904 14.596020 121.057170      -0.810992       1.898186
-    EDSA EDSA_ZONE_05                 905 14.617818 121.051401       1.898186       3.797729
-    EDSA EDSA_ZONE_06                 905 14.647272 121.038613       3.797729       7.860059
-      C5   C5_ZONE_01                 280 14.547071 121.058584      -8.537553      -3.833358
-      C5   C5_ZONE_02                 280 14.565144 121.068871      -3.833358      -1.288654
-      C5   C5_ZONE_03                 280 14.583349 121.076702      -1.288654       0.148390
-      C5   C5_ZONE_04                 280 14.595132 121.079697       0.148390       1.423289
-      C5   C5_ZONE_05                 280 14.606629 121.077722       1.423289       2.864025
-      C5   C5_ZONE_06                 280 14.639822 121.074212       2.864025       8.264276
+Saved: C:\Users\Lenovo\Documents\traffic_model_A\results\processed\zone_boundaries.csv (12 zones)
+corridor         zone  historical_reports  centroid_lat  centroid_lon  projected_min  projected_max
+    EDSA EDSA_ZONE_01                 905     14.548485    121.024971      -7.907934      -3.793407
+    EDSA EDSA_ZONE_02                 905     14.570234    121.046831      -3.793407      -1.699312
+    EDSA EDSA_ZONE_03                 905     14.582262    121.054220      -1.594546      -0.810992
+    EDSA EDSA_ZONE_04                 904     14.596020    121.057170      -0.810992       1.898186
+    EDSA EDSA_ZONE_05                 905     14.617818    121.051401       1.898186       3.797729
+    EDSA EDSA_ZONE_06                 905     14.647272    121.038613       3.797729       7.860059
+      C5   C5_ZONE_01                 280     14.547071    121.058584      -8.537553      -3.833358
+      C5   C5_ZONE_02                 280     14.565144    121.068871      -3.833358      -1.288654
+      C5   C5_ZONE_03                 280     14.583349    121.076702      -1.288654       0.148390
+      C5   C5_ZONE_04                 280     14.595132    121.079697       0.148390       1.423289
+      C5   C5_ZONE_05                 280     14.606629    121.077722       1.423289       2.864025
+      C5   C5_ZONE_06                 280     14.639822    121.074212       2.864025       8.264276
 
 ==========================================================================
 STEP 8.4 — MONTH-AWARE SHRINKAGE PROFILE & LOO KAPPA GRID
@@ -52,12 +52,12 @@ allocation. The corridor-wide (kappa = infinity) profile fits the held-out
 months at least as well as any finite kappa. The exported month-aware profile
 is supplied for review only; neither method is promoted to the main model.
 
-SCOPE OF THE KAPPA COMPARISON: the held-out Mar-Aug months have no other-year
-data in the 18-month window (they occur once, in 2019), so no other-year month
-is available to validate against. The kappa comparison therefore rests on
-Sep-Feb only, which each appear in two years. This is NO EVIDENCE FOR A MONTH
-EFFECT, not evidence that one is absent; it does not justify month-specific
-allocation with the data currently available.
+SCOPE OF THE KAPPA COMPARISON: when held out, the Mar-Aug months have no
+other-year data in the 18-month window (they occur once, in 2019), so no
+other-year month is available to validate against. Only Sep-Feb months, each
+present in two years, provide evidence for the kappa comparison. The finding is
+"no evidence for a month effect" with the data currently available; it does not
+justify month-specific allocation.
 
 Saved: C:\Users\Lenovo\Documents\traffic_simulation\results\processed\monthly_zone_hour_profile.csv (3444 rows) at best FINITE kappa=10000
 
