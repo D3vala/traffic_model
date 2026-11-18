@@ -1,0 +1,29 @@
+dataset,field,dtype,non_null,missing_pct,n_unique,sample_values,consistent_severity_measure,reason
+mmda_social_media_incidents_2018_2020.csv,Date,str,17312,0.0,715,2018-08-20 | 2018-08-21 | 2018-08-22 | 2018-08-23 | 2018-08-24,No,Calendar date of report; not a severity outcome.
+mmda_social_media_incidents_2018_2020.csv,Time,str,17190,0.7047134935304991,1484,7:55 AM | 8:42 AM | 9:13 AM | 10:27 AM | 11:18 AM,No,Time of report; not a severity outcome.
+mmda_social_media_incidents_2018_2020.csv,City,str,17125,1.0801756007393715,15,Pasig City | Mandaluyong | Makati City | San Juan | Quezon City,No,Location label; not a severity outcome.
+mmda_social_media_incidents_2018_2020.csv,Location,str,17289,0.13285582255083178,2977,ORTIGAS EMERALD | EDSA GUADIX | EDSA ROCKWELL | ORTIGAS CLUB FILIPINO | C5 KALAYAAN,No,Free-text location; not a severity outcome.
+mmda_social_media_incidents_2018_2020.csv,Latitude,float64,17312,0.0,1388,14.586343 | 14.589432 | 14.559818 | 14.601845999999998 | 14.556079,No,Coordinate; not a severity outcome.
+mmda_social_media_incidents_2018_2020.csv,Longitude,float64,17312,0.0,1392,121.061481 | 121.057243 | 121.04073700000001 | 121.046754 | 121.06293600000001,No,Coordinate; not a severity outcome.
+mmda_social_media_incidents_2018_2020.csv,High_Accuracy,int64,17312,0.0,2,1 | 0,No,Geolocation quality flag; not a severity outcome.
+mmda_social_media_incidents_2018_2020.csv,Direction,str,16455,4.950323475046211,9,EB | NB | SB | EB. | WB,No,Travel direction; not a severity outcome.
+mmda_social_media_incidents_2018_2020.csv,Type,str,17255,0.32925138632162665,493,VEHICULAR ACCIDENT | STALLED L300 DUE TO MECHANICAL PROBLEM | VEHICULAR ON FIRE | MULTIPLE COLLISION | STALLED TRUCK DUE TO MECHANICAL PROBLEM,No,"Free-text incident label (e.g. VEHICULAR ACCIDENT, stalled vehicle); no fatal / injury / property-damage coding."
+mmda_social_media_incidents_2018_2020.csv,Lanes_Blocked,float64,16625,3.968345656192237,5,1.0 | 2.0 | 3.0 | 4.0 | 6.0,No,"Number of lanes blocked; an operational detail, not a severity outcome."
+mmda_social_media_incidents_2018_2020.csv,Involved,str,16880,2.4953789279112755,2171,TAXI AND MC | L300 | SUV AND L300 | 2 CARS | BUS,No,Vehicle descriptions (e.g. TAXI AND MC); no casualty status.
+mmda_social_media_incidents_2018_2020.csv,Tweet,str,17312,0.0,17245,MMDA ALERT: Vehicular accident at Ortigas  | MMDA ALERT: Stalled L300 due to mechanical | MMDA ALERT: Vehicular accident at EDSA Roc | MMDA ALERT: Vehicular accident at Ortigas  | MMDA ALERT: Vehicular on fire at C5 Kalaya,No,Unstructured social-media text; no coded severity field.
+mmda_social_media_incidents_2018_2020.csv,Source,str,17312,0.0,17296,https://twitter.com/mmda/status/1031330201 | https://twitter.com/mmda/status/1031346247 | https://twitter.com/mmda/status/1031358966 | https://twitter.com/mmda/status/1031359069 | https://twitter.com/mmda/status/1031371124,No,Tweet URL; not a severity outcome.
+incidents_clean.csv,date,str,17023,0.0,715,2018-08-20 | 2018-08-21 | 2018-08-22 | 2018-08-23 | 2018-08-24,No,No coded severity scale documented.
+incidents_clean.csv,hour,float64,16871,0.8929095929037185,24,7.0 | 8.0 | 9.0 | 10.0 | 11.0,No,Hour of report; not a severity outcome.
+incidents_clean.csv,city,str,16837,1.0926393702637607,14,Pasig City | Mandaluyong | Makati City | San Juan | Quezon City,No,No coded severity scale documented.
+incidents_clean.csv,Location,str,17000,0.13511131997885215,2977,ORTIGAS EMERALD | EDSA GUADIX | EDSA ROCKWELL | ORTIGAS CLUB FILIPINO | C5 KALAYAAN,No,Free-text location; not a severity outcome.
+incidents_clean.csv,corridor,str,17023,0.0,3,OTHER | EDSA | C5,No,Corridor label; not a severity outcome.
+incidents_clean.csv,Type,str,16968,0.32309228690595077,493,VEHICULAR ACCIDENT | STALLED L300 DUE TO MECHANICAL PROBLEM | VEHICULAR ON FIRE | MULTIPLE COLLISION | STALLED TRUCK DUE TO MECHANICAL PROBLEM,No,"Free-text incident label (e.g. VEHICULAR ACCIDENT, stalled vehicle); no fatal / injury / property-damage coding."
+incidents_clean.csv,incident_class,str,17023,0.0,5,CRASH | STALL | OBSTRUCTION | ROADWORK | OTHER,No,"Broad outcome class (CRASH/STALL/etc.), not severity."
+incidents_clean.csv,direction,str,16171,5.004993244434001,4,EB | NB | SB | WB,No,No coded severity scale documented.
+incidents_clean.csv,Lanes_Blocked,float64,16383,3.7596193385419725,5,1.0 | 2.0 | 3.0 | 4.0 | 6.0,No,"Number of lanes blocked; an operational detail, not a severity outcome."
+incidents_clean.csv,Latitude,float64,17023,0.0,1388,14.586343 | 14.589432 | 14.559818 | 14.601845999999998 | 14.556079,No,Coordinate; not a severity outcome.
+incidents_clean.csv,Longitude,float64,17023,0.0,1392,121.061481 | 121.057243 | 121.04073700000001 | 121.046754 | 121.06293600000001,No,Coordinate; not a severity outcome.
+incidents_clean.csv,geo_valid,bool,17023,0.0,2,True | False,No,Coordinate validity flag; not a severity outcome.
+incidents_clean.csv,in_window,bool,17023,0.0,2,False | True,No,Estimation-window flag; not a severity outcome.
+mmda_social_media_incidents_2018_2020.csv,Type severity-term scan,text scan,493,0.0,493,DEAD: ['SUSPECTED DEAD PERSON'],No,Sporadic text terms are not a consistent coded severity scale.
+conclusion,severity_variable,n/a,0,0.0,0,,No,"No consistent, defensible severity variable exists in the incident feed. Severity remains unmodeled. No proxy was built."

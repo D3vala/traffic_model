@@ -1,0 +1,9 @@
+Task 8 - severity variable check (Refs #T8)
+
+Audited data\mmda_social_media_incidents_2018_2020.csv (17,312 rows) and results\processed\incidents_clean.csv (17,023 rows).
+Type is a free-text incident label; it does not code fatal, non-fatal injury, or property-damage outcomes.
+Lanes_Blocked is a lane count, Involved lists vehicles, and Tweet is unstructured social-media text. None is a consistent severity measure.
+Type severity-term scan searched ('FATAL', 'INJUR', 'DEAD', 'CASUALT', 'SERIOUS', 'MINOR'): sporadic matches {'DEAD': ['SUSPECTED DEAD PERSON']}.
+data\psa_metro_manila_road_crashes_2013_2024.csv contains annual Fatal, NonFatalInjury and DamageToProperty columns, but these are external aggregate counts, not per-report MMDA severity values; they were not used to assign severity to any incident.
+
+Conclusion: no consistent, defensible severity variable is available. Severity remains unmodeled. No severity proxy was built.
