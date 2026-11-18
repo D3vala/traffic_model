@@ -251,6 +251,13 @@ def fit_monthly_profile(historical, p0_df, log_buffer):
         log("allocation. The corridor-wide (kappa = infinity) profile fits the held-out", log_buffer)
         log("months at least as well as any finite kappa. The exported month-aware profile", log_buffer)
         log("is supplied for review only; neither method is promoted to the main model.", log_buffer)
+        log("", log_buffer)
+        log("SCOPE OF THE KAPPA COMPARISON: the held-out Mar-Aug months have no other-year", log_buffer)
+        log("data in the 18-month window (they occur once, in 2019), so no other-year month", log_buffer)
+        log("is available to validate against. The kappa comparison therefore rests on", log_buffer)
+        log("Sep-Feb only, which each appear in two years. This is NO EVIDENCE FOR A MONTH", log_buffer)
+        log("EFFECT, not evidence that one is absent; it does not justify month-specific", log_buffer)
+        log("allocation with the data currently available.", log_buffer)
     log("", log_buffer)
 
     # Export the full smoothed monthly profile at the best FINITE kappa.
@@ -279,6 +286,8 @@ def fit_monthly_profile(historical, p0_df, log_buffer):
                     "historical_reports": int(n_cm.loc[(zone, hour_label)]),
                     "p0_probability": float(p0.loc[(zone, hour_label)]),
                     "probability": float(prob_val),
+                    "kappa": best_kappa,
+                    "month_data_weight": n_total / (n_total + best_kappa),
                 })
 
     monthly_profile = pd.DataFrame(monthly_rows)
