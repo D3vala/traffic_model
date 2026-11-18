@@ -1,0 +1,15 @@
+corridor,peak_hour,peak_count,runner_up_hour,runner_up_count,reference_hour,reports_used,part,d,hypothetical_change_pct,peak_unchanged_pct_of_draws,worst_case_peak,worst_case_runner_up,worst_case_reversed,is_hypothetical,note
+EDSA,7,418,8,393,7,5400,a_deterministic,,-5.980861244019139,,,,,True,HYPOTHETICAL. Signed percentage change in the peak hour count that makes the runner-up as large; any larger decrease reverses the ordering.
+EDSA,7,418,8,393,7,5400,b_random,0.1,,71.39999999999999,,,,True,"HYPOTHETICAL. Each hour multiplied by an independent uniform factor in [1-0.1, 1+0.1] over 2000 draws; percentage of draws in which the observed peak hour remains the largest."
+EDSA,7,418,8,393,7,5400,b_random,0.2,,50.24999999999999,,,,True,"HYPOTHETICAL. Each hour multiplied by an independent uniform factor in [1-0.2, 1+0.2] over 2000 draws; percentage of draws in which the observed peak hour remains the largest."
+EDSA,7,418,8,393,7,5400,b_random,0.3,,40.400000000000006,,,,True,"HYPOTHETICAL. Each hour multiplied by an independent uniform factor in [1-0.3, 1+0.3] over 2000 draws; percentage of draws in which the observed peak hour remains the largest."
+EDSA,7,418,8,393,7,5400,worst_case,0.1,,,376.2,432.3,True,True,HYPOTHETICAL worst case at d=0.1: peak x (1-0.1) versus runner-up x (1+0.1). Not a measured reporting rate.
+EDSA,7,418,8,393,7,5400,worst_case,0.2,,,334.40000000000003,471.59999999999997,True,True,HYPOTHETICAL worst case at d=0.2: peak x (1-0.2) versus runner-up x (1+0.2). Not a measured reporting rate.
+EDSA,7,418,8,393,7,5400,worst_case,0.3,,,292.59999999999997,510.90000000000003,True,True,HYPOTHETICAL worst case at d=0.3: peak x (1-0.3) versus runner-up x (1+0.3). Not a measured reporting rate.
+C5,15,179,16,153,15,1668,a_deterministic,,-14.52513966480447,,,,,True,HYPOTHETICAL. Signed percentage change in the peak hour count that makes the runner-up as large; any larger decrease reverses the ordering.
+C5,15,179,16,153,15,1668,b_random,0.1,,97.75,,,,True,"HYPOTHETICAL. Each hour multiplied by an independent uniform factor in [1-0.1, 1+0.1] over 2000 draws; percentage of draws in which the observed peak hour remains the largest."
+C5,15,179,16,153,15,1668,b_random,0.2,,79.45,,,,True,"HYPOTHETICAL. Each hour multiplied by an independent uniform factor in [1-0.2, 1+0.2] over 2000 draws; percentage of draws in which the observed peak hour remains the largest."
+C5,15,179,16,153,15,1668,b_random,0.3,,66.5,,,,True,"HYPOTHETICAL. Each hour multiplied by an independent uniform factor in [1-0.3, 1+0.3] over 2000 draws; percentage of draws in which the observed peak hour remains the largest."
+C5,15,179,16,153,15,1668,worst_case,0.1,,,161.1,168.3,True,True,HYPOTHETICAL worst case at d=0.1: peak x (1-0.1) versus runner-up x (1+0.1). Not a measured reporting rate.
+C5,15,179,16,153,15,1668,worst_case,0.2,,,143.20000000000002,183.6,True,True,HYPOTHETICAL worst case at d=0.2: peak x (1-0.2) versus runner-up x (1+0.2). Not a measured reporting rate.
+C5,15,179,16,153,15,1668,worst_case,0.3,,,125.3,198.9,True,True,HYPOTHETICAL worst case at d=0.3: peak x (1-0.3) versus runner-up x (1+0.3). Not a measured reporting rate.
