@@ -20,10 +20,10 @@ The file contains a 9-by-9 coefficient covariance matrix and notes that it was a
 
 From `results/tables/simulation_results.csv`, for `scenario=baseline`, `elasticity=1.0`, and `trend=frozen`:
 
-| Corridor | Monte Carlo mean | p05 | p95 |
-|---|---:|---:|---:|
-| EDSA | 3,350.798 (about 3,351) | 2,889.0 | 3,887.0 |
-| C5 | 1,302.395 (about 1,302) | 1,087.9 | 1,542.05 |
+| Corridor | Monte Carlo mean | p05-p95 simulation interval |
+|---|---:|---:|
+| EDSA | 3,350.798 (about 3,351) | 2,889–3,887 |
+| C5 | 1,302.395 (about 1,302) | 1,088–1,542 |
 
 These are expected counts under the baseline scenario. They are not observed counts. The corresponding observed crash-report totals in the estimation window are 5,429 for EDSA and 1,680 for C5; those cover 18 months and must not be presented as the simulated annual expectations.
 

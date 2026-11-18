@@ -38,8 +38,8 @@ ROWS = [
         ),
         "psa_series": "PSA crash statistics cover Metro Manila.",
         "source": (
-            "incidents_clean.csv (corridor); notebook Step 8.2 cell; "
-            "docs/member3_task_brief.md line 291"
+            "incidents_clean.csv (corridor); notebook Step 8.2; "
+            "docs/member3_task_brief.md, Part 1, Section 11: PSA/MMDA Comparison"
         ),
     },
     {
@@ -68,8 +68,9 @@ ROWS = [
         ),
         "psa_series": "PSA figures are annual, from 2013 through 2024.",
         "source": (
-            "incidents_clean.csv (date, hour); README.md line 254; "
-            "psa_metro_manila_road_crashes_2013_2024.csv (Year); notebook cell 0"
+            "incidents_clean.csv (date, hour); README.md, Section 11, Understand the "
+            "evidence and limitations; psa_metro_manila_road_crashes_2013_2024.csv "
+            "(Year); notebook dataset metadata cell"
         ),
     },
     {
@@ -80,7 +81,11 @@ ROWS = [
             "be estimated."
         ),
         "psa_series": PLACEHOLDER,
-        "source": "README.md line 253; docs/member3_task_brief.md line 58",
+        "source": (
+            "README.md, Section 11, Understand the evidence and limitations; "
+            "docs/member3_task_brief.md, Part 1, Section 1, Differential corridor "
+            "reporting sensitivity"
+        ),
     },
     {
         "dimension": "role in this study",
@@ -93,8 +98,8 @@ ROWS = [
             "estimation or as validation of EDSA or C5 counts."
         ),
         "source": (
-            "notebook cell 0 dataset table; "
-            "docs/member3_task_brief.md lines 306-308"
+            "notebook dataset metadata cell; docs/member3_task_brief.md, "
+            "Part 1, Section 11: PSA/MMDA Comparison"
         ),
     },
 ]
