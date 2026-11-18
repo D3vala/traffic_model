@@ -5,7 +5,7 @@ EVENT-LEVEL SPATIOTEMPORAL ALLOCATION WORK (MEMBER 3)
 ==========================================================================
 STEP 8.3 — APPROXIMATE SPATIAL ZONES & BOUNDARIES
 ==========================================================================
-Saved: C:\Users\Lenovo\Documents\traffic_model_A\results\processed\zone_boundaries.csv (12 zones)
+Saved: C:\Users\Lenovo\Documents\traffic_simulation\results\processed\zone_boundaries.csv (12 zones)
 corridor         zone  historical_reports  centroid_lat  centroid_lon  projected_min  projected_max
     EDSA EDSA_ZONE_01                 905     14.548485    121.024971      -7.907934      -3.793407
     EDSA EDSA_ZONE_02                 905     14.570234    121.046831      -3.793407      -1.699312
