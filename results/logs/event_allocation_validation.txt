@@ -52,6 +52,13 @@ allocation. The corridor-wide (kappa = infinity) profile fits the held-out
 months at least as well as any finite kappa. The exported month-aware profile
 is supplied for review only; neither method is promoted to the main model.
 
+SCOPE OF THE KAPPA COMPARISON: the held-out Mar-Aug months have no other-year
+data in the 18-month window (they occur once, in 2019), so no other-year month
+is available to validate against. The kappa comparison therefore rests on
+Sep-Feb only, which each appear in two years. This is NO EVIDENCE FOR A MONTH
+EFFECT, not evidence that one is absent; it does not justify month-specific
+allocation with the data currently available.
+
 Saved: C:\Users\Lenovo\Documents\traffic_model_A\results\processed\monthly_zone_hour_profile.csv (3444 rows) at best FINITE kappa=10000
 
 ==========================================================================
