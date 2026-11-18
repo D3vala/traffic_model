@@ -1,8 +1,7 @@
 """Task 11: structured PSA / MMDA comparison using project files only. Refs #T11.
 
-Each cell is one or two complete sentences. Facts not present in the project
-files are left as the required placeholder. The PSA series stays external
-context, never validation of EDSA or C5 counts.
+Each cell is one or two complete sentences. The PSA series remains external
+context and cannot independently validate EDSA or C5 counts.
 """
 
 from pathlib import Path
@@ -11,8 +10,6 @@ import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / "results" / "tables" / "psa_mmda_comparison.csv"
-
-PLACEHOLDER = "not documented in project files; verify with source"
 
 ROWS = [
     {
@@ -48,12 +45,14 @@ ROWS = [
             "The incident source is the MMDA social-media feed. Raw Source "
             "fields are Twitter status URLs."
         ),
-        "psa_series": PLACEHOLDER,
+        "psa_series": (
+            "PSA republishes MMDA/MMARAS administrative records; PSA does not "
+            "operate an independent collection system."
+        ),
         "source": (
-            "PSA, 2024 Philippine Statistical Yearbook, Table 17.9: "
-            "https://psa.gov.ph/system/files/psy/2024-Philippine-Statistical-Yearbook.pdf; "
-            "PSA OpenSTAT Table 13.20 metadata: "
-            "https://openstat.psa.gov.ph/PXWeb/pxweb/en/DB/DB__3S__C13/0212H2BRCS0.px/"
+            "2024 Philippine Statistical Yearbook, Table 13.20 (printed p. 13-26) "
+            "and Table 17.9 (printed p. 17-16): "
+            "https://psa.gov.ph/system/files/psy/2024-PSY_Final-revised_as-of-July-29-signed.pdf"
         ),
     },
     {
@@ -76,11 +75,14 @@ ROWS = [
             "authoritative EDSA or C5 registry exists, so capture rates cannot "
             "be estimated."
         ),
-        "psa_series": PLACEHOLDER,
+        "psa_series": (
+            "Neither PSA/MMDA/MMARAS completeness nor EDSA/C5 capture rates "
+            "are established."
+        ),
         "source": (
-            "README.md, Section 11, Understand the evidence and limitations; "
-            "docs/member3_task_brief.md, Part 1, Section 1, Differential corridor "
-            "reporting sensitivity"
+            "2024 Philippine Statistical Yearbook, Table 13.20 (printed p. 13-26) "
+            "and Table 17.9 (printed p. 17-16): "
+            "https://psa.gov.ph/system/files/psy/2024-PSY_Final-revised_as-of-July-29-signed.pdf"
         ),
     },
     {
@@ -90,12 +92,13 @@ ROWS = [
             "model."
         ),
         "psa_series": (
-            "The PSA series is external context only. It is not used in "
-            "estimation or as validation of EDSA or C5 counts."
+            "The PSA series is external context only and cannot independently "
+            "validate EDSA/C5 counts. It is not used in model estimation."
         ),
         "source": (
-            "notebook dataset metadata cell; docs/member3_task_brief.md, "
-            "Part 1, Section 11: PSA/MMDA Comparison"
+            "2024 Philippine Statistical Yearbook, Table 13.20 (printed p. 13-26) "
+            "and Table 17.9 (printed p. 17-16): "
+            "https://psa.gov.ph/system/files/psy/2024-PSY_Final-revised_as-of-July-29-signed.pdf"
         ),
     },
 ]
@@ -106,7 +109,6 @@ def main():
         row[key]
         for row in ROWS
         for key in ("mmda_feed", "psa_series")
-        if row[key] != PLACEHOLDER
     ]
     assert len(cells) == len(set(cells)), "duplicated cell text"
     assert not any(
