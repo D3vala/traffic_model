@@ -1,0 +1,16 @@
+Task 1 - differential corridor reporting sensitivity (Refs #T1)
+
+Inputs: results\processed\incident_monthly_panel.csv (in_window, CRASH counts), results\processed\exposure_alignment.csv (vehicle_passages).
+Window: 2018-09..2020-02, 18 complete months, paired by month.
+EDSA crashes=5,429, vehicle-days=214,660,786, rate=2.5291066e-05/vehicle-day.
+C5 crashes=1,680, vehicle-days=126,467,748, rate=1.3284019e-05/vehicle-day.
+Observed ratio R = rate_EDSA / rate_C5 = 1.9039.
+Paired month bootstrap (2000 draws, seed 20260919): R 95% CI [1.6648, 2.1505]. The same resampled months are used for both corridors; reports are not resampled individually.
+
+Corrected rate ratio = observed EDSA/C5 rate ratio x cC/cE = R / (cE/cC).
+Break-even occurs when cE/cC = R (1.9039).
+Reversal of the observed EDSA-greater-than-C5 ordering needs cE/cC > R (> 1.9039).
+Since cE <= 1, a reversal requires C5 completeness below 1/R (< 0.5252); this is a necessary condition, not an estimate.
+All cE/cC values in the table are hypothetical sensitivity assumptions. No capture rate is invented or estimated, and the corrected ratios are not corrected true rates.
+
+Saved table: results\tables\reporting_bias_sensitivity.csv.
