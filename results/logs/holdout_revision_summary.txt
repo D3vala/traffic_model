@@ -5,7 +5,7 @@ T9 - holdout benchmark table in words
 Check 1: the member3_* predictions were fitted on the first 14 months only
 (train 2018-09..2019-10; test 2019-11..2020-02). Check 2: the member3_*
 prediction table contains no interval columns. Both checks are reported by
-src/work/m3_9.py.
+src/revision_checks/m3_9.py.
 
 Recomputed main-model MAE/MAPE match Member 1's summary exactly: EDSA
 40.348491 / 15.666227%, C5 38.594443 / 32.446859%. No refit was performed.
