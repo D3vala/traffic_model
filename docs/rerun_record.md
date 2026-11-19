@@ -230,3 +230,59 @@ exists: results/tables/psa_mmda_comparison.csv
 | `results/tables/psa_mmda_comparison.csv` (T11) | identical |
 
 The only differing files are the six timestamp-only files listed in Step 2. `grep src/work results/logs/holdout_revision_summary.txt` → **0 matches**.
+
+## Addendum after data restore
+
+- **Date and time:** 2026-11-20 05:07:04 +08:00
+- **Commit hash:** `513c181b14a9917764334777b27565e5e6bff311`
+- The EDSA violations data file was restored to its original bytes (`513c181 Restore original EDSA violations data bytes`). The main notebook was re-executed without `--inplace`; the runner notebook was **not** re-run.
+
+Data provenance check (identical blob hashes confirm the restore):
+
+```
+git rev-parse pre-m3:data/edsa_violations.csv HEAD:data/edsa_traffic_violations_2014_2018.csv
+```
+
+```
+89cca656f21fd35e192ee6ab09ca9a0203c446a2
+89cca656f21fd35e192ee6ab09ca9a0203c446a2
+```
+
+### EVENT_CHECKS (fresh execution)
+
+```
+EVENT SIMULATION VERIFICATION
+
+PASS - Probability totals
+PASS - Nonnegative incident counts
+PASS - Valid simulation intervals
+PASS - Valid roads
+PASS - Valid hours
+PASS - Valid dates
+PASS - All incidents allocated
+```
+
+No FAIL lines; the executed notebook contains no error outputs.
+
+### Step 6 vs Step 8 comparison
+
+```
+Annual crashes: counts-only (Step 6) vs event-level (Step 8)
+
+  corridor scenario       Step 6    Step 8     diff
+  -------------------------------------------------
+  EDSA     baseline        3,351     3,335    -0.5%
+  EDSA     plus_10         3,679     3,675    -0.1%
+  EDSA     plus_20         4,007     3,999    -0.2%
+  EDSA     plus_30         4,345     4,333    -0.3%
+  C5       baseline        1,302     1,314     0.9%
+  C5       plus_10         1,435     1,439     0.3%
+  C5       plus_20         1,563     1,577     0.9%
+  C5       plus_30         1,698     1,712     0.8%
+
+Largest disagreement: 0.9%
+```
+
+### Results diff after re-run
+
+`git diff --ignore-cr-at-eol --stat -- results` → 6 files, 8 insertions(+), 8 deletions(-): only run timestamps and GLM `Time:` lines. No CSV changed content.

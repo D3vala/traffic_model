@@ -1,4 +1,4 @@
-04_model.py — run 2026-11-20 04:57:03
+04_model.py — run 2026-11-20 05:06:07
 
 ==========================================================================
 STEP 1 — JOIN CRASHES TO EXPOSURE
@@ -100,7 +100,7 @@ Model Family:        NegativeBinomial   Df Model:                            8
 Link Function:                    Log   Scale:                          1.0000
 Method:                          IRLS   Log-Likelihood:                -167.19
 Date:                Fri, 20 Nov 2026   Deviance:                       25.907
-Time:                        04:57:04   Pearson chi2:                     27.1
+Time:                        05:06:08   Pearson chi2:                     27.1
 No. Iterations:                     6   Pseudo R-squ. (CS):             0.9808
 Covariance Type:            nonrobust                                         
 ==============================================================================
