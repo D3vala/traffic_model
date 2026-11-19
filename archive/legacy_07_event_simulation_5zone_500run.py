@@ -1,3 +1,6 @@
+# LEGACY: superseded by
+# src/event_level_simulation.py; do not run or import.
+
 """
 07_event_simulation.py — event-level spatiotemporal layer (Step 8).
 
