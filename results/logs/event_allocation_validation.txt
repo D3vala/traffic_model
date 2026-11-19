@@ -1,6 +1,9 @@
 ==========================================================================
-EVENT-LEVEL SPATIOTEMPORAL ALLOCATION WORK (MEMBER 3)
+EVENT-LEVEL SPATIOTEMPORAL ALLOCATION TEST (MEMBER 3)
+TEST ONLY: does not replace the main corridor-wide method
 ==========================================================================
+
+CONSTANT CHECK [PASS]: EVENT_RUNS, SAMPLE_RUNS, ZONES_PER_ROAD, EVENT_ELASTICITIES match src/event_level_simulation.py (read via ast, not imported)
 
 ==========================================================================
 STEP 8.3 — APPROXIMATE SPATIAL ZONES & BOUNDARIES

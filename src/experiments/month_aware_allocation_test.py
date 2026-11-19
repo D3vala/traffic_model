@@ -1,5 +1,7 @@
 """
-carl_event_level_simulation_work.py — Member 3 Event-Level Spatiotemporal Allocation & Validation
+TEST ONLY: does not replace the main corridor-wide method
+
+month_aware_allocation_test.py — Member 3 Event-Level Spatiotemporal Allocation Test
 
 Implements (working copy only — the main notebook and main model are NOT changed):
 1. Approximate spatial zones derived via SVD/PCA along the corridor coordinate cloud
@@ -27,6 +29,7 @@ Implements (working copy only — the main notebook and main model are NOT chang
 All text output is written with encoding="utf-8".
 """
 
+import ast
 import json
 from pathlib import Path
 import numpy as np
@@ -75,6 +78,69 @@ def log(msg="", log_buffer=None):
 
 def as_boolean(series):
     return series.astype(str).str.lower().isin(["true", "1", "yes"])
+
+
+# ---------------------------------------------------------------------------
+# Configuration guard — read the main Step 8 constants with ast, never import
+# ---------------------------------------------------------------------------
+MAIN_STEP8_SOURCE = ROOT / "src" / "event_level_simulation.py"
+TEST_CONSTANTS = {
+    "EVENT_RUNS": EVENT_RUNS,
+    "SAMPLE_RUNS": SAMPLE_RUNS,
+    "ZONES_PER_ROAD": ZONES_PER_ROAD,
+    "EVENT_ELASTICITIES": EVENT_ELASTICITIES,
+}
+
+
+def verify_constants_against_main_source(log_buffer=None):
+    """Parse (never import) the main Step 8 source and require matching constants.
+
+    Importing src/event_level_simulation.py would execute the whole Step 8
+    pipeline, so its AST is parsed instead and the four run-size constants are
+    evaluated as literals and compared with the values this test uses. Any
+    mismatch or missing constant aborts the run before any output is written.
+    """
+    tree = ast.parse(
+        MAIN_STEP8_SOURCE.read_text(encoding="utf-8"), filename=str(MAIN_STEP8_SOURCE)
+    )
+    main_constants = {}
+    for node in tree.body:
+        if not isinstance(node, ast.Assign):
+            continue
+        for target in node.targets:
+            if isinstance(target, ast.Name) and target.id in TEST_CONSTANTS:
+                try:
+                    main_constants[target.id] = ast.literal_eval(node.value)
+                except (ValueError, SyntaxError) as exc:
+                    raise RuntimeError(
+                        f"Cannot read {target.id} as a literal from "
+                        f"{MAIN_STEP8_SOURCE}: {exc}"
+                    ) from exc
+
+    missing = [name for name in TEST_CONSTANTS if name not in main_constants]
+    if missing:
+        raise RuntimeError(
+            f"Refusing to run: {MAIN_STEP8_SOURCE} does not define "
+            f"required constant(s): {', '.join(missing)}"
+        )
+
+    mismatches = [
+        f"{name}: main={main_constants[name]!r}, test={TEST_CONSTANTS[name]!r}"
+        for name in TEST_CONSTANTS
+        if main_constants[name] != TEST_CONSTANTS[name]
+    ]
+    if mismatches:
+        raise RuntimeError(
+            "Refusing to run: run-size constants differ from "
+            f"{MAIN_STEP8_SOURCE}: " + "; ".join(mismatches)
+        )
+
+    log(
+        "CONSTANT CHECK [PASS]: EVENT_RUNS, SAMPLE_RUNS, ZONES_PER_ROAD, "
+        "EVENT_ELASTICITIES match src/event_level_simulation.py "
+        "(read via ast, not imported)",
+        log_buffer,
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -590,8 +656,13 @@ def verify_and_validate(monthly_profile, event_summary, event_allocation,
 def main():
     log_buffer = []
     log("=" * 74, log_buffer)
-    log("EVENT-LEVEL SPATIOTEMPORAL ALLOCATION WORK (MEMBER 3)", log_buffer)
+    log("EVENT-LEVEL SPATIOTEMPORAL ALLOCATION TEST (MEMBER 3)", log_buffer)
+    log("TEST ONLY: does not replace the main corridor-wide method", log_buffer)
     log("=" * 74, log_buffer)
+    log("", log_buffer)
+
+    # Abort before any output is written if the main Step 8 source has drifted.
+    verify_constants_against_main_source(log_buffer)
     log("", log_buffer)
 
     incidents = pd.read_csv(PROCESSED / "incidents_clean.csv")
