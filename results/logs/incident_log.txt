@@ -1,12 +1,12 @@
-03_incident_analysis.py — run 2026-10-05 22:53:01
+03_incident_analysis.py â€” run 2026-11-20 05:06:04
 
 ==========================================================================
-STEP 1 — LOAD AND REPAIR
+STEP 1 â€” LOAD AND REPAIR
 ==========================================================================
 Raw rows: 17,312
 Unparseable dates: 0
 Unparseable times: 153 (recovered 31 by accepting the no-space '3:20PM' form)
-Encoding repair: 'ParaÃ±aque' (107 rows) -> 'Parañaque'
+Encoding repair: 'ParaÃƒÂ±aque' (107 rows) -> 'ParaÃ±aque'
 Encoding repair: 'Kalookan City' (70 rows) -> 'Caloocan City'
 Coordinates (0,0) 'null island': 55 rows -> flagged geo_valid=False, RETAINED for counting
 Outside Metro Manila bounding box: 0 rows
@@ -20,7 +20,7 @@ Lanes_Blocked missing: 687
 Rows after repair: 17,023  (dropped 289)
 
 ==========================================================================
-STEP 2 — CLASSIFY INCIDENT TYPE
+STEP 2 â€” CLASSIFY INCIDENT TYPE
 ==========================================================================
 Distinct raw Type strings: 493
 Type values occurring exactly once: 343 of 493  <- free text, not a coded field
@@ -35,7 +35,7 @@ Modelled outcome = CRASH only: 12,570 rows.
 Treating every row as a crash would inflate counts by 35%.
 
 ==========================================================================
-STEP 3 — TAG CORRIDOR
+STEP 3 â€” TAG CORRIDOR
 ==========================================================================
 Distinct location strings: 2,977
   EDSA     8,287
@@ -43,17 +43,17 @@ Distinct location strings: 2,977
   OTHER    6,104
 
 EDSA/C5 overlap: 0 rows.
-Zero overlap confirmed — the corridors are disjoint, so per-corridor
+Zero overlap confirmed â€” the corridors are disjoint, so per-corridor
 rates are well defined and the two roads can be compared directly.
 
 ==========================================================================
-STEP 4 — COVERAGE AUDIT
+STEP 4 â€” COVERAGE AUDIT
 ==========================================================================
 Series spans 2018-08-20 to 2020-12-27 (29 months)
 
   month     rows   status
   ----------------------------------------------
-  2018-08     309   partial month — series begins mid-month
+  2018-08     309   partial month â€” series begins mid-month
   2018-09     863   usable
   2018-10   1,065   usable
   2018-11     920   usable
@@ -72,19 +72,19 @@ Series spans 2018-08-20 to 2020-12-27 (29 months)
   2019-12     609   usable
   2020-01     773   usable
   2020-02     767   usable
-  2020-03     286   lockdown / post-gap — excluded
-  2020-04      11   lockdown / post-gap — excluded
-  2020-05      75   lockdown / post-gap — excluded
-  2020-06      69   lockdown / post-gap — excluded
-  2020-07       0   NO DATA — collection gap
-  2020-08       0   NO DATA — collection gap
-  2020-09     239   lockdown / post-gap — excluded
-  2020-10     427   lockdown / post-gap — excluded
-  2020-11     287   lockdown / post-gap — excluded
-  2020-12     221   lockdown / post-gap — excluded
+  2020-03     286   lockdown / post-gap â€” excluded
+  2020-04      11   lockdown / post-gap â€” excluded
+  2020-05      75   lockdown / post-gap â€” excluded
+  2020-06      69   lockdown / post-gap â€” excluded
+  2020-07       0   NO DATA â€” collection gap
+  2020-08       0   NO DATA â€” collection gap
+  2020-09     239   lockdown / post-gap â€” excluded
+  2020-10     427   lockdown / post-gap â€” excluded
+  2020-11     287   lockdown / post-gap â€” excluded
+  2020-12     221   lockdown / post-gap â€” excluded
 
 Zero-row months: ['2020-07', '2020-08']
-These are NOT months without crashes. The feed is a Twitter scrape;
+These zero-record months should not be interpreted as zero-collision months.
 absence of a tweet is absence of a report, not absence of an event.
 Any denominator covering these months is wrong by an unknown amount.
 
@@ -93,7 +93,7 @@ Monthly range within window: 609 to 1,065
 No zero months, no partial months, no lockdown months inside it.
 
 ==========================================================================
-STEP 5 — BUILD PANELS
+STEP 5 â€” BUILD PANELS
 ==========================================================================
 Monthly panel: 81 rows (54 inside the estimation window)
 

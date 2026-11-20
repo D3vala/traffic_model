@@ -1,0 +1,113 @@
+==========================================================================
+EVENT-LEVEL SPATIOTEMPORAL ALLOCATION TEST (MEMBER 3)
+TEST ONLY: does not replace the main corridor-wide method
+==========================================================================
+
+CONSTANT CHECK [PASS]: EVENT_RUNS, SAMPLE_RUNS, ZONES_PER_ROAD, EVENT_ELASTICITIES match src/event_level_simulation.py (read via ast, not imported)
+
+==========================================================================
+STEP 8.3 — APPROXIMATE SPATIAL ZONES & BOUNDARIES
+==========================================================================
+Saved: C:\Users\Lenovo\Documents\traffic_simulation\results\processed\zone_boundaries.csv (12 zones)
+corridor         zone  historical_reports  centroid_lat  centroid_lon  projected_min  projected_max
+    EDSA EDSA_ZONE_01                 905     14.548485    121.024971      -7.907934      -3.793407
+    EDSA EDSA_ZONE_02                 905     14.570234    121.046831      -3.793407      -1.699312
+    EDSA EDSA_ZONE_03                 905     14.582262    121.054220      -1.594546      -0.810992
+    EDSA EDSA_ZONE_04                 904     14.596020    121.057170      -0.810992       1.898186
+    EDSA EDSA_ZONE_05                 905     14.617818    121.051401       1.898186       3.797729
+    EDSA EDSA_ZONE_06                 905     14.647272    121.038613       3.797729       7.860059
+      C5   C5_ZONE_01                 280     14.547071    121.058584      -8.537553      -3.833358
+      C5   C5_ZONE_02                 280     14.565144    121.068871      -3.833358      -1.288654
+      C5   C5_ZONE_03                 280     14.583349    121.076702      -1.288654       0.148390
+      C5   C5_ZONE_04                 280     14.595132    121.079697       0.148390       1.423289
+      C5   C5_ZONE_05                 280     14.606629    121.077722       1.423289       2.864025
+      C5   C5_ZONE_06                 280     14.639822    121.074212       2.864025       8.264276
+
+==========================================================================
+STEP 8.4 — MONTH-AWARE SHRINKAGE PROFILE & LOO KAPPA GRID
+==========================================================================
+Estimation window: 18 months (2018-09 to 2020-02)
+Sparsity: Sep-Feb appear twice in the 18-month window; Mar-Aug only once (2019).
+Month-of-year is therefore confounded with year and trend.
+
+Leave-one-month-out log-likelihood (p0 recomputed WITHOUT the held-out month;
+add-one pseudocount 1 on the recomputed baseline):
+  kappa          EDSA LL         C5 LL   Combined LL
+  ----------------------------------------------------
+  10          -27690.411     -8875.615    -36566.026
+  25          -27261.428     -8497.930    -35759.359
+  50          -26946.216     -8264.999    -35211.215
+  100         -26656.329     -8094.781    -34751.110
+  250         -26357.539     -7967.694    -34325.232
+  500         -26220.385     -7925.571    -34145.956
+  1000        -26151.206     -7907.813    -34059.019
+  2500        -26119.089     -7899.772    -34018.861
+  10000       -26110.910     -7897.000    -34007.910
+  inf         -26110.305     -7896.329    -34006.634
+
+Best FINITE kappa: 10000 (Combined LL = -34007.910)
+Kappa = infinity reference: Combined LL = -34006.634
+Best finite kappa at grid edge (10000): YES
+Kappa = infinity beats best finite: YES (ties: NO)
+
+PLAIN STATEMENT: 18 months of historical data do NOT support month-specific
+allocation. The corridor-wide (kappa = infinity) profile fits the held-out
+months at least as well as any finite kappa. The exported month-aware profile
+is supplied for review only; neither method is promoted to the main model.
+
+SCOPE OF THE KAPPA COMPARISON: when held out, the Mar-Aug months have no
+other-year data in the 18-month window (they occur once, in 2019), so no
+other-year month is available to validate against. Only Sep-Feb months, each
+present in two years, provide evidence for the kappa comparison. The finding is
+"no evidence for a month effect" with the data currently available; it does not
+justify month-specific allocation.
+
+Saved: C:\Users\Lenovo\Documents\traffic_simulation\results\processed\monthly_zone_hour_profile.csv (3444 rows) at best FINITE kappa=10000
+
+==========================================================================
+STEP 8.5 — REPRODUCE MONTHLY COUNTS (RNG SEED AND DRAW ORDER PRESERVED)
+==========================================================================
+Coefficient draw: full covariance matrix
+Generated monthly simulations for 24 keys.
+
+==========================================================================
+STEP 8.6 — MONTH-AWARE SPATIOTEMPORAL EVENT ALLOCATION
+==========================================================================
+Total simulated events across all runs: 64,235,669
+Total allocated events across all runs: 64,235,669
+Conservation: EXACT (0 events lost)
+Sample event records kept: 42,283
+
+==========================================================================
+STEP 8.8 — VALIDATION CHECKS & STEP 6 CROSS-CHECK
+==========================================================================
+Validation Summary Table:
+  [PASS] Monthly probabilities sum to 1.0 per corridor/month
+  [PASS] Nonnegative simulated incident counts
+  [PASS] Simulation intervals ordered (p05 <= median <= p95)
+  [PASS] Valid corridors (EDSA, C5)
+  [PASS] Valid hours (00-23, UNKNOWN_TIME)
+  [PASS] Valid calendar dates in sample events
+  [PASS] Valid days for the month
+  [PASS] Exact count conservation (no events lost)
+  [PASS] Sample events only runs 1-2 at elasticity 1.0
+  [PASS] Month-aware monthly counts equal original Step 8.5 counts
+  [PASS] Step 6 vs Step 8 agreement (< 5.0% discrepancy gate)
+
+Step 8.5 agreement: maximum absolute difference across all 24 keys and
+  six summary statistics = 0 (tolerance 1e-8)
+
+Step 6 vs Step 8 Comparison Table (elasticity = 1.0, frozen trend):
+  corridor scenario        Step 6    Step 8    diff %
+  ---------------------------------------------------
+  EDSA     baseline        3350.8    3334.9    -0.47%
+  EDSA     plus_10         3679.0    3675.2    -0.10%
+  EDSA     plus_20         4006.7    3999.0    -0.19%
+  EDSA     plus_30         4345.2    4333.4    -0.27%
+  C5       baseline        1302.4    1314.0     0.89%
+  C5       plus_10         1434.7    1438.9     0.29%
+  C5       plus_20         1563.2    1577.3     0.90%
+  C5       plus_30         1698.5    1712.5     0.83%
+
+Largest disagreement vs Step 6: 0.90% (Threshold: < 5.00%)
+

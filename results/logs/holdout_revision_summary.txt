@@ -1,0 +1,93 @@
+Holdout revision summary (T9 and T10, with T8 severity reminder)
+Branch: feat/m3-sensitivity
+
+T9 - holdout benchmark table in words
+Check 1: the member3_* predictions were fitted on the first 14 months only
+(train 2018-09..2019-10; test 2019-11..2020-02). Check 2: the member3_*
+prediction table contains no interval columns. Both checks are reported by
+src/revision_checks/m3_9.py.
+
+Recomputed main-model MAE/MAPE match Member 1's summary exactly: EDSA
+40.348491 / 15.666227%, C5 38.594443 / 32.446859%. No refit was performed.
+
+Four methods were compared on the four test months: the main Negative
+Binomial model, the historical corridor mean, the seasonal-naive prediction
+(the same calendar month a year earlier), and an exposure-only prediction
+(training reports per vehicle-day multiplied by test vehicle-days). Metrics
+are MAE, RMSE, MAPE, Poisson deviance, NB2 deviance (alpha = 0.0235678391959799
+from results/processed/model_params.json), and mean signed bias defined as
+predicted minus observed, so a negative value means underprediction. Both
+deviance formulas are written in holdout_model_comparison.csv and printed by
+the script.
+
+EDSA, n=4: main MAE 40.348, RMSE 49.745, MAPE 15.67%, Poisson deviance 44.83,
+NB deviance 7.26, signed bias -26.961. Historical mean MAE 71.500, seasonal
+naive 72.500, exposure-only 50.854. The main model has the lowest MAE of the
+four on EDSA.
+
+C5, n=4: main MAE 38.594, RMSE 45.120, MAPE 32.45%, Poisson deviance 96.75,
+NB deviance 32.80, signed bias -38.594. Historical mean MAE 22.286, seasonal
+naive 22.250, exposure-only 31.681. On C5 the main model has the highest MAE
+of the four.
+
+90% predictive-interval coverage is recorded as "N/A: no training-fit
+covariance saved" in both holdout_model_comparison.csv and
+holdout_month_level.csv and in the stdout. No intervals were simulated and no
+covariance was substituted.
+
+T10 - findings
+All four held-out C5 months are underpredicted by every one of the four
+variants. Mean signed errors are negative for all four: main -38.594, reduced
+one-harmonic -37.938, main with 2019 AADT -31.115, reduced with 2019 AADT
+-30.582. The largest-error C5 month is 2020-02 for every variant, with
+absolute errors 69.85 (main), 73.18 (reduced), 55.30 (main/2019-AADT) and
+59.38 (reduced/2019-AADT). On EDSA the largest-error month is 2020-01 for the
+main and reduced actual-exposure variants (75.99 and 73.10), 2020-01 for the
+main/2019-AADT variant (27.88), and 2019-11 for the reduced/2019-AADT variant
+(36.80).
+
+Substituting 2019 AADT for January-February 2020 lowers MAE for both corridors:
+EDSA from 40.348 to 17.158, and C5 from 38.594 to 31.115. This is a sensitivity
+test using the 2019 AADT input, not the true 2020 traffic volume. The provenance
+of the 2020 AADT figures has not been checked in this work.
+
+Reducing to one seasonal harmonic barely changes C5 MAE (38.594 to 37.938) and
+raises EDSA MAE (40.348 to 45.681).
+
+Main model against the three baselines: on EDSA the main model has lower MAE
+than all three (40.348 versus 50.854 to 72.500). On C5 all three baselines beat
+the main model (22.250 to 31.681 versus 38.594). The manuscript cannot claim
+that the model beats simple benchmarks for C5.
+
+n=4 caveat
+There are only four test months per corridor (2019-11 through 2020-02). Any
+four-month proportion, such as the share of underpredicted months, can only be
+0, 25, 50, 75 or 100%. All holdout metrics rest on four observations per
+corridor and should be reported as descriptive, not as precise estimates.
+
+Severity (T8)
+No consistent and defensible severity variable exists in the incident feed.
+Type is free text with no fatal, injury or property-damage coding;
+Lanes_Blocked is an operational detail; the Tweet field is unstructured. The
+PSA file has annual Fatal, NonFatalInjury and DamageToProperty columns, but
+these are external aggregates, not per-report values, and were not used to
+assign severity. Severity remains unmodeled and no proxy was built.
+
+What could not be done
+- 90% interval coverage for the main model could not be computed. Only the
+  full-window coefficient covariance was saved
+  (results/tables/model_coefficient_covariance.csv); no covariance from the
+  14-month training fit exists. Deriving intervals from the full-window
+  covariance would combine a 14-month prediction with an 18-month fit, so
+  coverage is reported as unavailable. Filling it requires Member 1 to export
+  the training-fit covariance, which touches Member 1's code and needs group
+  approval.
+- The true 2020 traffic volume was not validated. The 2019-AADT variant is a
+  sensitivity test only.
+- Capture rates and reporting completeness could not be estimated: there is no
+  matched authoritative EDSA/C5 crash registry. The T1 reporting grid is
+  hypothetical and tests nothing measured.
+- No severity model could be built, for the reason given above.
+- No Member 1 model was refitted and no new model variants were created in
+  these tasks.
+- No causes are asserted anywhere in this note or in the T9/T10 outputs.

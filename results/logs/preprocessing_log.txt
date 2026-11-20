@@ -1,13 +1,13 @@
 MMDA Traffic Incident Simulation — preprocessing log
-Generated: 2026-10-05 22:53:00
+Generated: 2026-11-20 05:06:01
 
 MMDA TRAFFIC INCIDENT SIMULATION — PREPROCESSING
-Run: 2026-10-05 22:53:00
+Run: 2026-11-20 05:06:01
 
 ========================================================================
 STEP 1 — Load raw AADT
 ========================================================================
-  Loaded AADT_2014_2025_combined.csv
+  Loaded aadt_2014_2025.csv
   Shape: 252 rows x 13 columns
   Years: 2014–2025
   Rows per year: [21]
